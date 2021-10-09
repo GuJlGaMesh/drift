@@ -40,8 +40,12 @@ namespace drift.Service
 
         public UserCredentialsTemplate Login(LoginRequest loginRequest)
         {
-            var user = db.Users.FirstOrDefault(u =>
-                u.Email == loginRequest.Email && PasswordEncoder.Decrypt(u.PasswordHash).Equals(loginRequest.Password));
+            var user = db.Users.FirstOrDefault(u => u.Email == loginRequest.Email);
+            if (!PasswordEncoder.Decrypt(user.PasswordHash).Equals((loginRequest.Password)))
+            {
+                return null;
+            }
+
             if (user != null)
             {
                 var userRole = db.UserRoles.FirstOrDefault(r =>

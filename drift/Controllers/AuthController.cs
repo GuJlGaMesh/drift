@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using drift.Data;
-using drift.Models;
 using drift.Models.Request;
 using drift.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace drift.Controllers
 {
@@ -28,6 +25,14 @@ namespace drift.Controllers
         public IActionResult Login()
         {
             return View();
+        }
+
+
+        [HttpGet]
+        public IActionResult DoSmth()
+        {
+            var role = HttpContext.User.Claims.ToList().Find(c => c.Type == ClaimTypes.Role);
+            return View(role);
         }
 
         [HttpPost]
