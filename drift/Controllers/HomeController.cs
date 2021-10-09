@@ -22,7 +22,7 @@ namespace drift.Controllers
 		{
 			return View();
 		}
-
+		
 		public IActionResult Privacy()
 		{
 			return View();
@@ -33,5 +33,8 @@ namespace drift.Controllers
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
+		
+		
+		
 	}
 }
