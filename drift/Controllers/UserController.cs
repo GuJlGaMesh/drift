@@ -85,6 +85,16 @@ namespace drift.Controllers
 			return View(competition);
 		}
 
+		public async Task<IActionResult> Participate(int? id)
+		{
+			if (id == null) return NotFound();
+
+			var competition = await _context.Competitions.FindAsync(id);
+			if (competition == null) return NotFound();
+			ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", competition.CreatedById);
+			return View();
+		}
+
 		// POST: User/Edit/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
