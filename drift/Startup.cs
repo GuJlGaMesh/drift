@@ -29,6 +29,7 @@ namespace drift
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddScoped<UserService, UserService>();
+            services.AddScoped<CompetitionService, CompetitionService>();
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
