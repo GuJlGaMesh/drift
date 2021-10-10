@@ -27,6 +27,7 @@ namespace drift
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddHttpContextAccessor();
 
             services.AddScoped<UserService, UserService>();
             services.AddScoped<CompetitionService, CompetitionService>();
