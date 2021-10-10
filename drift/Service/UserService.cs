@@ -33,6 +33,7 @@ namespace drift.Service
                 Email = request.Email, UserName = request.UserName,
                 PasswordHash = PasswordEncoder.Encrypt(request.Password)
             }).Entity;
+            
             db.SaveChanges();
 
             return user;
