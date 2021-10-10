@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace drift.Models.Dto
@@ -10,6 +11,7 @@ namespace drift.Models.Dto
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
         public string CreatedById { get; set; }
+        [DisplayName("Created by:")]
         public String CreatorUserName { get; set; }
         public string Name { get; set; }
         public bool RegistrationOpen { get; set; }

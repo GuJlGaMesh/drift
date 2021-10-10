@@ -7,7 +7,10 @@ namespace drift.Utils
     {
         public MappingProfile()
         {
-            CreateMap<Competition, CompetitionDto>();
+            CreateMap<Competition, CompetitionDto>()
+                .ForMember("CreatorUserName",
+                    comp => comp.MapFrom(c => c.CreatedBy.UserName));
+            
         }
     }
 }

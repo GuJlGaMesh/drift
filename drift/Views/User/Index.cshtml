@@ -1,4 +1,4 @@
-@model IEnumerable<drift.Data.Entity.Competition>
+@model IEnumerable<drift.Models.Dto.CompetitionDto>
 
 @{
     ViewData["Title"] = "Index";
@@ -17,7 +17,7 @@
                 @Html.DisplayNameFor(model => model.StartDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
+                @Html.DisplayNameFor(model => model.CreatorUserName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
@@ -41,10 +41,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.StartDate.ToShortDateString())
+                @Html.DisplayFor(modelItem => item.StartDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy.Id)
+                @Html.DisplayFor(modelItem => item.CreatorUserName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)

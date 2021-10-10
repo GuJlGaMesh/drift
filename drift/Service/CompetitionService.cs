@@ -11,18 +11,13 @@ namespace drift.Service
     public class CompetitionService
     {
         private ApplicationDbContext db;
-        private Mapper _mapper;
+        private IMapper _mapper;
         private UserService _userService;
 
-        public CompetitionService(ApplicationDbContext db)
+        public CompetitionService(ApplicationDbContext db, IMapper mapper)
         {
             this.db = db;
-            var config = new MapperConfiguration(
-                cfg => cfg.CreateMap<CompetitionDto, Competition>()
-                    .ReverseMap()
-                    .ForMember("CreatorUserName",
-                        comp => comp.MapFrom(c => c.CreatedBy.UserName)));
-            _mapper = new Mapper(config);
+            _mapper = mapper;
         }
 
         public CompetitionDto CreateCompetition(CompetitionDto dto, string creatorId)

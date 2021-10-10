@@ -1,3 +1,4 @@
+using AutoMapper;
 using drift.Data;
 using drift.Service;
 using drift.Utils;
@@ -32,14 +33,20 @@ namespace drift
 
             services.AddScoped<UserService, UserService>();
             services.AddScoped<CompetitionService, CompetitionService>();
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+	            mc.AddProfile(new MappingProfile());
+            });
 
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie();
-            services.AddAutoMapper(config => config.AddProfile<MappingProfile>());
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
