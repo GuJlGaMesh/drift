@@ -2,9 +2,9 @@
 {
     public enum UserRole
     {
-        USER,
-        ORGANIZER,
-        TECH_COMMISSION,
-        MEDICAL_COMMISSION
+        USER=1,
+        ORGANIZER=2,
+        TECH_COMMISSION=3,
+        MEDICAL_COMMISSION=4
     }
 }

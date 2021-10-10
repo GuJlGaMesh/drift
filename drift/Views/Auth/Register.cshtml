@@ -1,4 +1,5 @@
-﻿@model drift.Models.Request.RegisterRequest
+﻿@using drift.Models.Request
+@model drift.Models.Request.RegisterRequest
 
 @{
     ViewBag.Title = "title";
@@ -17,7 +18,8 @@
         </div>
         <div>
             <label asp-for="Role">Введите роль</label><br/>
-            <input asp-for="Role"/>
+            <input type="radio" value="USER" asp-for="Role">
+            <input type="radio" value="ORGANIZER" asp-for="Role">
         </div>
         <div>
             <input type="submit" value="Register"/>

@@ -11,7 +11,7 @@ namespace drift.Service
     {
         private ApplicationDbContext db;
 
-        private const string USER_ROLE = "User";
+        private const string USER_ROLE = "USER";
 
         public UserService(ApplicationDbContext db)
         {
