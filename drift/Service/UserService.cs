@@ -10,12 +10,14 @@ namespace drift.Service
     public class UserService
     {
         private ApplicationDbContext db;
+        private SignInManager<IdentityUser> _signInManager;
 
         private const string USER_ROLE = "USER";
 
-        public UserService(ApplicationDbContext db)
+        public UserService(ApplicationDbContext db, SignInManager<IdentityUser> signInManager)
         {
             this.db = db;
+            _signInManager = signInManager;
         }
 
         public IdentityUser Register(RegisterRequest request)
@@ -52,7 +54,7 @@ namespace drift.Service
                 r.UserId == user.Id);
             var role = db.Roles.FirstOrDefault(r =>
                 r.Id == userRole.RoleId);
-            return new UserCredentialsTemplate(user.Email, role?.Name ?? USER_ROLE,user.Id);
+            return new UserCredentialsTemplate(user.Email, role?.Name ?? USER_ROLE, user.Id);
         }
     }
 }

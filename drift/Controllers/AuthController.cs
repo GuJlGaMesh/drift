@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using drift.Models;
-using drift.Models.Dto;
 using drift.Models.Request;
 using drift.Service;
 using Microsoft.AspNetCore.Authentication;
@@ -40,7 +38,8 @@ namespace drift.Controllers
         {
             var authModel = _userService.Login(model);
 
-            await Authenticate(authModel.Email, authModel.Role);
+            await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
+            
             return RedirectToAction("Index", "Home");
             // if (authModel.Role == UserRole.USER.ToString())
             // return RedirectToAction("Index", "User");
@@ -67,11 +66,12 @@ namespace drift.Controllers
             return Redirect("Login");
         }
 
-        private async Task Authenticate(string userName, string role)
+        private async Task Authenticate(string email, string role, string userId)
         {
             var claims = new List<Claim>
             {
-                new(ClaimsIdentity.DefaultNameClaimType, userName),
+                new(ClaimsIdentity.DefaultNameClaimType, userId),
+                new(ClaimTypes.Email, email),
                 new(ClaimTypes.Role, role)
             };
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
