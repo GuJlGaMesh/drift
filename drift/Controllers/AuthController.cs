@@ -39,7 +39,7 @@ namespace drift.Controllers
         {
             var authModel = _userService.Login(model);
 
-            await Authenticate(authModel.Email, authModel.Role);
+            await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
 
             return RedirectToAction("Index", "Home");
         }
@@ -58,11 +58,12 @@ namespace drift.Controllers
             return Redirect("Login");
         }
 
-        private async Task Authenticate(string userName, string role)
+        private async Task Authenticate(string email, string role, string userId)
         {
             var claims = new List<Claim>
             {
-                new(ClaimsIdentity.DefaultNameClaimType, userName),
+                new(ClaimsIdentity.DefaultNameClaimType, userId),
+                new(ClaimTypes.Email, email),
                 new(ClaimTypes.Role, role)
             };
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using AutoMapper;
 using drift.Data;
@@ -19,7 +20,7 @@ namespace drift.Service
             var config = new MapperConfiguration(
                 cfg => cfg.CreateMap<CompetitionDto, Competition>()
                     .ReverseMap()
-                    .ForMember("CreatorUserName", 
+                    .ForMember("CreatorUserName",
                         comp => comp.MapFrom(c => c.CreatedBy.UserName)));
             _mapper = new Mapper(config);
         }
@@ -31,6 +32,16 @@ namespace drift.Service
             db.Competitions.Add(entity);
             db.SaveChanges();
             return _mapper.Map<Competition, CompetitionDto>(entity);
+        }
+
+        public CompetitionDto GetById(int id)
+        {
+            return _mapper.Map<Competition, CompetitionDto>(db.Competitions.FirstOrDefault(c => c.Id == id));
+        }
+
+        public List<CompetitionDto> FindCompetitions()
+        {
+            return _mapper.Map<IEnumerable<Competition>, List<CompetitionDto>>(db.Competitions.Select(c => c).ToList());
         }
     }
 }
