@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using drift.Data.Entity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace drift.Data
@@ -9,5 +10,9 @@ namespace drift.Data
 			: base(options)
 		{
 		}
+
+		public DbSet<Car> Cars { get; set; }
+		public DbSet<CompetitionApplication> CompetitionApplications { get; set; }
+		public DbSet<Competition> Competitions { get; set; }
 	}
 }
