@@ -1,60 +1,75 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using drift.Data;
 using drift.Models.Request;
 using drift.Models.Template;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace drift.Service
 {
     public class UserService
     {
-        private ApplicationDbContext db;
+        private UserManager<IdentityUser> _userManager;
+        private RoleManager<IdentityRole> _roleManager;
         private SignInManager<IdentityUser> _signInManager;
 
         private const string USER_ROLE = "USER";
 
-        public UserService(ApplicationDbContext db, SignInManager<IdentityUser> signInManager)
+        public UserService(ApplicationDbContext db, UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager)
         {
-            this.db = db;
+            _userManager = userManager;
+            _roleManager = roleManager;
             _signInManager = signInManager;
         }
 
-        public IdentityUser Register(RegisterRequest request)
+        public async Task<IdentityUser> Register(RegisterRequest request)
         {
-            var user = db.Users.FirstOrDefault(u => u.Email == request.Email);
-            if (user != null)
+            if (_userManager.FindByEmailAsync(request.Email).Result != null)
             {
-                throw new Exception("Aboba");
+                throw new Exception("User exists");
             }
 
-            user = db.Users.Add(new IdentityUser
+            var user = new IdentityUser()
             {
-                Email = request.Email, UserName = request.UserName,
-                PasswordHash = PasswordEncoder.Encrypt(request.Password)
-            }).Entity;
-            db.UserRoles.Add(new IdentityUserRole<string>()
+                Email = request.Email, UserName = request.UserName, EmailConfirmed = true
+            };
+            if (!_userManager.CreateAsync(user, request.Password).Result.Succeeded)
             {
-                UserId = user.Id, RoleId = Enum.GetName(request.Role) ?? USER_ROLE
-            });
-            db.SaveChanges();
+                throw new Exception("Error creating user");
+            }
 
+            var userRole = Enum.GetName(request.Role) ?? USER_ROLE;
+
+            if (!_roleManager.RoleExistsAsync(userRole).Result)
+            {
+                await _roleManager.CreateAsync(new IdentityRole(userRole));
+            }
+
+            await _userManager.AddToRoleAsync(user, userRole);
             return user;
         }
 
-        public UserCredentialsTemplate Login(LoginRequest loginRequest)
+        public async Task<UserCredentialsTemplate> Login(LoginRequest loginRequest)
         {
-            var user = db.Users.FirstOrDefault(u => u.Email == loginRequest.Email);
-            if (user == null || !PasswordEncoder.Decrypt(user.PasswordHash).Equals(loginRequest.Password))
+            var existingUser = await _userManager.FindByEmailAsync(loginRequest.Email);
+            var result = _signInManager.PasswordSignInAsync(existingUser.Email, loginRequest.Password, true, false)
+                .Result;
+            if (!result.Succeeded)
             {
-                return null;
+                throw new Exception("Error logging in");
             }
 
-            var userRole = db.UserRoles.FirstOrDefault(r =>
-                r.UserId == user.Id);
-            var role = db.Roles.FirstOrDefault(r =>
-                r.Id == userRole.RoleId);
-            return new UserCredentialsTemplate(user.Email, role?.Name ?? USER_ROLE, user.Id);
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
+            Console.WriteLine(role);
+
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, role));
+            return new UserCredentialsTemplate(user.Email, role, user.Id);
         }
     }
 }

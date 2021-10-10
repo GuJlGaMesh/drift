@@ -1,5 +1,6 @@
 using AutoMapper;
 using drift.Data;
+using drift.Models;
 using drift.Service;
 using drift.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -33,20 +34,24 @@ namespace drift
 
             services.AddScoped<UserService, UserService>();
             services.AddScoped<CompetitionService, CompetitionService>();
-            var mapperConfig = new MapperConfiguration(mc =>
-            {
-	            mc.AddProfile(new MappingProfile());
-            });
+            var mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<IdentityUser>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.SignIn.RequireConfirmedPhoneNumber = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie();
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using AutoMapper;
@@ -23,7 +24,11 @@ namespace drift.Service
         public CompetitionDto CreateCompetition(CompetitionDto dto, string creatorId)
         {
             var entity = _mapper.Map<Competition>(dto);
-            entity.CreatedBy = db.Users.FirstOrDefault(u => u.Id == creatorId);
+            Console.WriteLine(creatorId);
+            var users = db.Users.Select(c => c).ToList();
+            Console.WriteLine(string.Join("\t", users));
+            var creator = db.Users.FirstOrDefault(u => u.Id == creatorId);
+            entity.CreatedBy = creator;
             db.Competitions.Add(entity);
             db.SaveChanges();
             return _mapper.Map<Competition, CompetitionDto>(entity);
@@ -36,7 +41,9 @@ namespace drift.Service
 
         public List<CompetitionDto> FindCompetitions()
         {
-            return _mapper.Map<IEnumerable<Competition>, List<CompetitionDto>>(db.Competitions.Select(c => c).ToList());
+            var competitions = db.Competitions.Select(c => c).ToList();
+            Console.WriteLine(string.Join("\t", competitions));
+            return _mapper.Map<IEnumerable<Competition>, List<CompetitionDto>>(competitions);
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using drift.Models;
@@ -26,21 +28,14 @@ namespace drift.Controllers
             return View();
         }
 
-
-        [HttpGet]
-        public IActionResult DoSmth()
-        {
-            var role = HttpContext.User.Claims.ToList().Find(c => c.Type == ClaimTypes.Role);
-            return View(role);
-        }
-
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequest model)
         {
-            var authModel = _userService.Login(model);
-
-            await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
+            var authModel = await _userService.Login(model);
             
+            await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
+
+
             if (authModel.Role == UserRole.USER.ToString())
                 return RedirectToAction("Index", "User");
             // if (authModel.Role == UserRole.ORGANIZER.ToString())
@@ -61,10 +56,17 @@ namespace drift.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterRequest model)
         {
-            _userService.Register(model);
+            await _userService.Register(model);
             return Redirect("Login");
         }
 
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Auth");
+        }
+        
         private async Task Authenticate(string email, string role, string userId)
         {
             var claims = new List<Claim>
@@ -76,12 +78,6 @@ namespace drift.Controllers
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-        }
-
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Auth");
         }
     }
 }

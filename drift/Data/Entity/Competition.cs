@@ -29,5 +29,9 @@ namespace drift.Data.Entity
 		[Required]
 		public double Fee { get; set; }
 
+		public override string ToString()
+		{
+			return $"{nameof(Id)}: {Id}, {nameof(StartDate)}: {StartDate}, {nameof(CreatedById)}: {CreatedById}, {nameof(CreatedBy)}: {CreatedBy}, {nameof(Name)}: {Name}, {nameof(RegistrationOpen)}: {RegistrationOpen}, {nameof(Finished)}: {Finished}, {nameof(Description)}: {Description}, {nameof(Fee)}: {Fee}";
+		}
 	}
 }

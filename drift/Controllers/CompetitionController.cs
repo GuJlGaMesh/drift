@@ -8,6 +8,7 @@ using drift.Models.Request;
 using drift.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ namespace drift.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "ORGANIZER")]
         public IActionResult CreateCompetition()
         {
             return View();
