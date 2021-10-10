@@ -43,8 +43,6 @@ namespace drift.Controllers
             await Authenticate(authModel.Email, authModel.Role);
 
             return RedirectToAction("Index", "Home");
-            //TODO: Redirect
-            return null;
         }
 
         [HttpGet]
@@ -56,7 +54,8 @@ namespace drift.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterRequest model)
         {
-            return View(model);
+            _userService.Register(model);
+            return Redirect("Login");
         }
 
         private async Task Authenticate(string userName, string role)
