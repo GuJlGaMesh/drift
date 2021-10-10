@@ -4,7 +4,6 @@ using drift.Data;
 using drift.Models.Request;
 using drift.Models.Template;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace drift.Service
 {
@@ -21,7 +20,6 @@ namespace drift.Service
 
         public IdentityUser Register(RegisterRequest request)
         {
-            var encrypted = PasswordEncoder.Encrypt(request.Password);
             var user = db.Users.FirstOrDefault(u => u.Email == request.Email);
             if (user != null)
             {
@@ -33,7 +31,10 @@ namespace drift.Service
                 Email = request.Email, UserName = request.UserName,
                 PasswordHash = PasswordEncoder.Encrypt(request.Password)
             }).Entity;
-            
+            db.UserRoles.Add(new IdentityUserRole<string>()
+            {
+                UserId = user.Id, RoleId = Enum.GetName(request.Role) ?? USER_ROLE
+            });
             db.SaveChanges();
 
             return user;
@@ -42,21 +43,16 @@ namespace drift.Service
         public UserCredentialsTemplate Login(LoginRequest loginRequest)
         {
             var user = db.Users.FirstOrDefault(u => u.Email == loginRequest.Email);
-            if (!PasswordEncoder.Decrypt(user.PasswordHash).Equals((loginRequest.Password)))
+            if (user == null || !PasswordEncoder.Decrypt(user.PasswordHash).Equals(loginRequest.Password))
             {
                 return null;
             }
 
-            if (user != null)
-            {
-                var userRole = db.UserRoles.FirstOrDefault(r =>
-                    r.UserId == user.Id);
-                var role = db.Roles.FirstOrDefault(r =>
-                    r.Id == userRole.RoleId);
-                return new UserCredentialsTemplate(user.Email, role?.Name ?? USER_ROLE);
-            }
-
-            return null;
+            var userRole = db.UserRoles.FirstOrDefault(r =>
+                r.UserId == user.Id);
+            var role = db.Roles.FirstOrDefault(r =>
+                r.Id == userRole.RoleId);
+            return new UserCredentialsTemplate(user.Email, role?.Name ?? USER_ROLE);
         }
     }
 }
