@@ -23,11 +23,31 @@ namespace drift.Controllers
         }
 
         [HttpGet]
-        public IActionResult Competition(CompetitionDto dto)
+        public IActionResult CreateCompetition()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateCompetition(CompetitionDto dto)
         {
             var creatorId = HttpContext.User.Identity?.Name;
-           var createdDto = _competitionService.CreateCompetition(dto, creatorId);
-            return View(createdDto);
+            var created = _competitionService.CreateCompetition(dto, creatorId);
+            return RedirectToAction("GetCompetition", "Competition", new {id = created.Id});
+        }
+
+        [HttpGet]
+        public IActionResult GetCompetition(int id)
+        {
+            var competition = _competitionService.GetById(id);
+            return View(competition);
+        }
+
+        [HttpGet]
+        public IActionResult GetCompetitions()
+        {
+            var competitions = _competitionService.FindCompetitions();
+            return View(competitions);
         }
     }
 }

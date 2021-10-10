@@ -1,0 +1,30 @@
+﻿@model drift.Models.Dto.CompetitionDto
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<form asp-action="CreateCompetition" asp-controller="Competition" asp-anti-forgery="true">
+    <div>
+        <div>
+            <label asp-for="Name">Enter name</label><br/>
+            <input type="text" asp-for="Name"/>
+        </div>
+        <div>
+            <label asp-for="Description">Enter desscription</label><br/>
+            <input asp-for="Description"/>
+        </div>
+        <div>
+            <label asp-for="Fee">Enter fee</label><br/>
+            <input asp-for="Fee" type="number"/>
+        </div>
+        <div>
+            <label asp-for="StartDate">Enter fee</label><br/>
+            <input asp-for="StartDate" type="date"/>
+        </div>
+        <div>
+            <input type="submit" value="Add competition"/>
+        </div>
+    </div>
+</form>

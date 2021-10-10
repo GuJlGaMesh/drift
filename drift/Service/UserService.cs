@@ -52,7 +52,7 @@ namespace drift.Service
                 r.UserId == user.Id);
             var role = db.Roles.FirstOrDefault(r =>
                 r.Id == userRole.RoleId);
-            return new UserCredentialsTemplate(user.Email, role?.Name ?? USER_ROLE);
+            return new UserCredentialsTemplate(user.Email, role?.Name ?? USER_ROLE,user.Id);
         }
     }
 }

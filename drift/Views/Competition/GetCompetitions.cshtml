@@ -1,0 +1,14 @@
+﻿@model System.Collections.Generic.List<drift.Models.Dto.CompetitionDto>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+@foreach (var comp in @Model)
+{
+    <li>
+        @Html.ActionLink(@comp.Name, "GetCompetition", "Competition", new {id = @comp.Id}, null)
+        <p>@comp.Description</p>
+        @comp.CreatorUserName
+    </li>
+}

@@ -5,10 +5,13 @@
         public string Email { get; set; }
         public string Role { get; set; }
 
-        public UserCredentialsTemplate(string email, string role)
+        public string UserId { get; set; }
+
+        public UserCredentialsTemplate(string email, string role, string userId)
         {
             Email = email;
             Role = role;
+            UserId = userId;
         }
     }
 }
