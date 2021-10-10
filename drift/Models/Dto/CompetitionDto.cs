@@ -1,11 +1,13 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace drift.Models.Dto
 {
     public class CompetitionDto
     {
         public int Id { get; set; }
-
+        
+        [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
         public string CreatedById { get; set; }
         public String CreatorUserName { get; set; }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using drift.Models;
 using drift.Models.Request;
 using drift.Service;
 using Microsoft.AspNetCore.Authentication;
@@ -40,17 +41,15 @@ namespace drift.Controllers
 
             await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
             
-            return RedirectToAction("Index", "Home");
-            // if (authModel.Role == UserRole.USER.ToString())
-            // return RedirectToAction("Index", "User");
+            if (authModel.Role == UserRole.USER.ToString())
+                return RedirectToAction("Index", "User");
             // if (authModel.Role == UserRole.ORGANIZER.ToString())
             // return RedirectToAction("Index", "Competition");
             // if (authModel.Role == UserRole.TECH_COMMISSION.ToString())
             // return RedirectToAction("Index", "Tech");
             // if (authModel.Role == UserRole.MEDICAL_COMMISSION.ToString())
             // return RedirectToAction("Index", "Medical");
-
-
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]

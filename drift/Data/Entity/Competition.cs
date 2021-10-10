@@ -13,6 +13,7 @@ namespace drift.Data.Entity
 		public int Id { get; set; }
 
 		[Required]
+		
 		public DateTime StartDate { get; set; }
 		[ForeignKey("CreatedBy")]
 		public string CreatedById { get; set; }
