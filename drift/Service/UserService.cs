@@ -8,6 +8,7 @@ using AutoMapper;
 using drift.Data;
 using drift.Data.Entity;
 using drift.Models.Dto;
+using drift.Models.Dto;
 using drift.Models.Request;
 using drift.Models.Template;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +38,16 @@ namespace drift.Service
             _context = db;
             _mapper = mapper;
             _authService = authService;
+        }
+        public UserDto findById(string userId)
+        {
+            var user = _userManager.FindByIdAsync(userId).Result;
+            return new UserDto()
+            {
+                Email = user.Email,
+                Id = user.Id,
+                UserName = user.UserName
+            };
         }
 
         public IEnumerable<CompetitionDto> GetAllAvailableCompetitions()

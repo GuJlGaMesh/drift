@@ -1,0 +1,136 @@
+﻿@model System.Collections.Generic.List<drift.Data.Entity.CompetitionResultDto>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<div
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Place</th>
+        <th scope="col">UserName</th>
+        <th scope="col">Number</th>
+        <th scope="col">Car</th>
+        <th scope="col">Qualification Score</th>
+        <th scope="col">Main Phase Score</th>
+        <th scope="col">Total Score</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var result in @Model)
+    {
+        <tr>
+            <th scope="row">@result.Place</th>
+            <td>@result.User.UserName</td>
+            <td>@result.CarNumber</td>
+            <td>@result.CarName</td>
+            <td>@result.QualificationScore</td>
+            <td>@result.MainPhaseScore</td>
+            <td>@result.TotalScore</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Top-16</th>
+        <th scope="col">Top-8</th>
+        <th scope="col">Top-4</th>
+        <th scope="col">Top-2</th>
+        <th scope="col">Winner</th>
+        <th scope="col">Top-2</th>
+        <th scope="col">Top-4</th>
+        <th scope="col">Top-8</th>
+        <th scope="col">Top-16</th>
+    </tr>
+    </thead>
+    <tbody>
+    @{ int a = 0, b = 0, c = 0, d = 0; }
+    @for (var i = 1; i <= 16; i += 2)
+    {
+        <tr>
+            <td>
+                @{ a++; }
+                @a
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>@i</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                @{ b++; }
+                @b
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>@b</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                @{ a++; }
+                @a
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td> @a</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                @if (i % 4 == 1)
+                {
+                    c++;
+                    @c
+                }
+            </td>
+            <td>
+                @if (i is 3 or 11)
+                {
+                    d++;
+                    @d
+                }
+            </td>
+            <td>
+                @if (i is 7)
+                {
+                    @(i%6)
+                }
+            </td>
+            <td>
+                @if (i is 3 or 11)
+                {
+                    @d
+                }
+            </td>
+            <td>
+                @if (i % 4 == 1)
+                {
+                    @c
+                }
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+    }
+    </tbody>
+</table>
