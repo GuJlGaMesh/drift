@@ -51,12 +51,7 @@ namespace drift.Controllers
             }
 	        catch
 	        {
-		        return View("CustomError", new CustomError
-		        {
-			        Action = nameof(Login), 
-			        Controller = this.GetCurrentControllerName(nameof(AuthController)), 
-			        Header = $"Попытка авторизации для {model.Email} не удалась. :("
-		        });
+		        return ReturnWithError(nameof(Login), $"Авторизация для {model.Email} не удалась.");
 	        }
            
         }
@@ -70,10 +65,26 @@ namespace drift.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterRequest model)
         {
-            await _userService.Register(model);
-            return Redirect("Login");
+	        try
+	        {
+		        await _userService.Register(model);
+		        return Redirect("Login");
+	        }
+	        catch
+	        {
+		        return ReturnWithError(nameof(Register), $"Регистрация для {model.UserName} не удалась.");
+	        }
         }
 
+        private IActionResult ReturnWithError(string action, string error)
+        {
+	        return View("CustomError",
+		        new CustomError()
+		        {
+			        Action = nameof(Login), Controller = this.GetCurrentControllerName(nameof(AuthController)),
+			        Header = error
+		        });
+        }
 
         public async Task<IActionResult> Logout()
         {
