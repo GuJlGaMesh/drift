@@ -1,0 +1,10 @@
+﻿@model CustomError
+
+
+<h1 class="text-danger text-center">Error.</h1>
+
+<h2 class="text-danger">@Model.Header</h2>
+
+<a asp-action="@Model.Action" asp-controller="@Model.Controller" class="btn-link" >Go back</a>
+
+

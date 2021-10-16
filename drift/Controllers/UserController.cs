@@ -9,28 +9,27 @@ using Microsoft.EntityFrameworkCore;
 using drift.Data;
 using drift.Data.Entity;
 using drift.Models.Dto;
+using drift.Service;
 
 namespace drift.Controllers
 {
 	public class UserController : Controller
 	{
+		private readonly UserService _userService;
 		private readonly ApplicationDbContext _context;
 		private readonly IMapper _mapper;
 
-		public UserController(ApplicationDbContext context, IMapper mapper)
+		public UserController(IMapper mapper,UserService userService)
 		{
-			_context = context;
 			_mapper = mapper;
+			_userService = userService;
+
 		}
 
 		// GET: User
 		public async Task<IActionResult> Index()
 		{
-			var competitions = _context.Competitions
-				.Include(c => c.CreatedBy)
-				.Where(x => !x.Finished)
-				.Select(x => _mapper.Map<CompetitionDto>(x))
-				.AsEnumerable();
+			var competitions = _userService.GetAllAvailableCompetitions();
 			return View(competitions);
 		}
 

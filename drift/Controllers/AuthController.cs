@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using drift.Models;
 using drift.Models.Request;
 using drift.Service;
+using drift.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -31,20 +32,33 @@ namespace drift.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequest model)
         {
-            var authModel = await _userService.Login(model);
-            
-            await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
+	        try
+	        {
+		        var authModel = await _userService.Login(model);
+
+		        await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
 
 
-            if (authModel.Role == UserRole.USER.ToString())
-                return RedirectToAction("Index", "User");
-            // if (authModel.Role == UserRole.ORGANIZER.ToString())
-            // return RedirectToAction("Index", "Competition");
-            // if (authModel.Role == UserRole.TECH_COMMISSION.ToString())
-            // return RedirectToAction("Index", "Tech");
-            // if (authModel.Role == UserRole.MEDICAL_COMMISSION.ToString())
-            // return RedirectToAction("Index", "Medical");
-            return RedirectToAction("Index", "Home");
+		        if (authModel.Role == UserRole.USER.ToString())
+			        return RedirectToAction("Index", "User");
+		        // if (authModel.Role == UserRole.ORGANIZER.ToString())
+		        // return RedirectToAction("Index", "Competition");
+		        // if (authModel.Role == UserRole.TECH_COMMISSION.ToString())
+		        // return RedirectToAction("Index", "Tech");
+		        // if (authModel.Role == UserRole.MEDICAL_COMMISSION.ToString())
+		        // return RedirectToAction("Index", "Medical");
+		        return RedirectToAction("Index", "Home");
+            }
+	        catch
+	        {
+		        return View("CustomError", new CustomError
+		        {
+			        Action = nameof(Login), 
+			        Controller = this.GetCurrentControllerName(nameof(AuthController)), 
+			        Header = $"Попытка авторизации для {model.Email} не удалась. :("
+		        });
+	        }
+           
         }
 
         [HttpGet]

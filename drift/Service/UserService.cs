@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using drift.Data;
+using drift.Data.Entity;
+using drift.Models.Dto;
 using drift.Models.Request;
 using drift.Models.Template;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace drift.Service
 {
@@ -16,6 +21,8 @@ namespace drift.Service
         private UserManager<IdentityUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private SignInManager<IdentityUser> _signInManager;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
         private const string USER_ROLE = "USER";
 
@@ -70,6 +77,15 @@ namespace drift.Service
 
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, role));
             return new UserCredentialsTemplate(user.Email, role, user.Id);
+        }
+
+        public IEnumerable<CompetitionDto> GetAllAvailableCompetitions()
+        {
+	        var competitions = _context.Competitions
+		        .Include(c => c.CreatedBy)
+		        .Where(x => !x.Finished)
+		        .AsEnumerable();
+	        return _mapper.Map<IEnumerable<Competition>, IEnumerable<CompetitionDto>>(competitions);
         }
     }
 }
