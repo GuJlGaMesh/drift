@@ -32,9 +32,11 @@ namespace drift.Service
                         Id = cr.Id,
                         Competition = _mapper.Map<CompetitionDto>(c),
                         Place = cr.Place,
+                        FirstPhaseScore = cr.FirstPhaseScore,
+                        SecondPhaseScore = cr.SecondPhaseScore,
+                        ThirdPhaseScore = cr.ThirdPhaseScore,
+                        FourthPhaseScore = cr.FourthPhaseScore,
                         CarNumber = cr.CarNumber,
-                        QualificationScore = cr.QualificationScore,
-                        MainPhaseScore = cr.MainPhaseScore,
                         TotalScore = cr.TotalScore,
                         User = _userService.findById(cr.ParticipantId),
                         ParticipantName = cr.ParticipantName
@@ -52,10 +54,12 @@ namespace drift.Service
                 {
                     CarNumber = dto.CarNumber,
                     CompetitionId = dto.Competition.Id,
-                    MainPhaseScore = dto.MainPhaseScore,
                     ParticipantId = dto.User.Id,
+                    FirstPhaseScore = dto.FirstPhaseScore,
+                    SecondPhaseScore = dto.SecondPhaseScore,
+                    ThirdPhaseScore = dto.ThirdPhaseScore,
+                    FourthPhaseScore = dto.FourthPhaseScore,
                     Place = dto.Place,
-                    QualificationScore = dto.QualificationScore,
                     TotalScore = dto.TotalScore,
                     ParticipantName = dto.ParticipantName
                 });
@@ -73,8 +77,6 @@ namespace drift.Service
                 var competitionResult = db.CompetitionResults.FirstOrDefault(cr => cr.Id == dto.Id);
                 if (competitionResult != null)
                 {
-                    competitionResult.QualificationScore = dto.QualificationScore;
-                    competitionResult.MainPhaseScore = dto.MainPhaseScore;
                     competitionResult.TotalScore = dto.TotalScore;
                     db.SaveChanges();
                 }

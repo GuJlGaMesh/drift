@@ -13,8 +13,14 @@ namespace drift.Data.Entity
         public string ParticipantCar { get; set; }
         public int Place { get; set; }
         public int CarNumber { get; set; }
-        public int QualificationScore { get; set; }
-        public int MainPhaseScore { get; set; }
+        
+        public int FirstPhaseScore { get; set; }
+        
+        public int SecondPhaseScore { get; set; }
+        
+        public int ThirdPhaseScore { get; set; }
+        
+        public int FourthPhaseScore { get; set; }
         public int TotalScore { get; set; }
     }
 }

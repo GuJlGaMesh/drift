@@ -18,8 +18,10 @@ namespace drift.Data.Migrations
                     ParticipantCar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Place = table.Column<int>(type: "int", nullable: true),
                     CarNumber = table.Column<int>(type: "int", nullable: true),
-                    QualificationScore = table.Column<int>(type: "int", nullable: true),
-                    MainPhaseScore = table.Column<int>(type: "int", nullable: true),
+                    FirstPhaseScore = table.Column<int>(type: "int", nullable: true),
+                    SecondPhaseScore = table.Column<int>(type: "int", nullable: true),
+                    ThirdPhaseScore = table.Column<int>(type: "int", nullable: true),
+                    FourthPhaseScore = table.Column<int>(type: "int", nullable: true),
                     TotalScore = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
