@@ -90,12 +90,6 @@ namespace drift.Service
 
         public IEnumerable<CompetitionDto> GetAllAvailableCompetitions()
         {
-            // var competitions = _context.Competitions
-            //     .Include(c => c.CreatedBy).AsEnumerable();
-            //     var hui = competitions
-            //     .Where(x => !x.Finished)
-            //     .Select(x => _mapper.Map<Competition, CompetitionDto>(x));
-            // return hui;
             var competitions = _context.Competitions
                 .Include(c => c.CreatedBy)
                 .Where(x => !x.Finished);
