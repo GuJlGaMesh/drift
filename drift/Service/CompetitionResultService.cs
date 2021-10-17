@@ -36,7 +36,8 @@ namespace drift.Service
                         QualificationScore = cr.QualificationScore,
                         MainPhaseScore = cr.MainPhaseScore,
                         TotalScore = cr.TotalScore,
-                        User = _userService.findById(cr.ParticipantId)
+                        User = _userService.findById(cr.ParticipantId),
+                        ParticipantName = cr.ParticipantName
                     };
                 return result.Select(dto => dto).OrderBy(dto => dto.Place).ToList();
             }
@@ -56,7 +57,7 @@ namespace drift.Service
                     Place = dto.Place,
                     QualificationScore = dto.QualificationScore,
                     TotalScore = dto.TotalScore,
-                    ParticipantCar = dto.CarName
+                    ParticipantName = dto.ParticipantName
                 });
                 db.SaveChanges();
                 dto.Id = result.Entity.Id;

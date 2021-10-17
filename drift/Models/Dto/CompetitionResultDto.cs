@@ -16,6 +16,6 @@ namespace drift.Data.Entity
         public int MainPhaseScore { get; set; }
         public int TotalScore { get; set; }
 
-        public string CarName { get; set; }
+        public string ParticipantName { get; set; }
     }
 }
