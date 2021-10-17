@@ -16,11 +16,11 @@ namespace drift.Controllers
 {
     public class AuthController : Controller
     {
-        private UserService _userService;
+        private AuthService _authService;
 
-        public AuthController(UserService userService)
+        public AuthController(AuthService authService)
         {
-            _userService = userService;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -34,7 +34,7 @@ namespace drift.Controllers
         {
 	        try
 	        {
-		        var authModel = await _userService.Login(model);
+		        var authModel = await _authService.Login(model);
 
 		        await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
 
@@ -67,7 +67,7 @@ namespace drift.Controllers
         {
 	        try
 	        {
-		        await _userService.Register(model);
+		        await _authService.Register(model);
 		        return Redirect("Login");
 	        }
 	        catch

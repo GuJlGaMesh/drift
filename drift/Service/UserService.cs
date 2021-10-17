@@ -23,69 +23,48 @@ namespace drift.Service
         private SignInManager<IdentityUser> _signInManager;
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private IHttpContextAccessor _httpContext;
 
         private const string USER_ROLE = "USER";
 
         public UserService(ApplicationDbContext db, UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager)
+            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
-        }
-
-        public async Task<IdentityUser> Register(RegisterRequest request)
-        {
-            if (_userManager.FindByEmailAsync(request.Email).Result != null)
-            {
-                throw new Exception("User exists");
-            }
-
-            var user = new IdentityUser()
-            {
-                Email = request.Email, UserName = request.UserName, EmailConfirmed = true
-            };
-            if (!_userManager.CreateAsync(user, request.Password).Result.Succeeded)
-            {
-                throw new Exception("Error creating user");
-            }
-
-            var userRole = Enum.GetName(request.Role) ?? USER_ROLE;
-
-            if (!_roleManager.RoleExistsAsync(userRole).Result)
-            {
-                await _roleManager.CreateAsync(new IdentityRole(userRole));
-            }
-
-            await _userManager.AddToRoleAsync(user, userRole);
-            return user;
-        }
-
-        public async Task<UserCredentialsTemplate> Login(LoginRequest loginRequest)
-        {
-            var existingUser = await _userManager.FindByEmailAsync(loginRequest.Email);
-            var result = _signInManager.PasswordSignInAsync(existingUser.Email, loginRequest.Password, true, false)
-                .Result;
-            if (!result.Succeeded)
-            {
-                throw new Exception("Error logging in");
-            }
-
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
-            var role = _userManager.GetRolesAsync(user).Result.FirstOrDefault();
-            Console.WriteLine(role);
-
-            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, role));
-            return new UserCredentialsTemplate(user.Email, role, user.Id);
+            _context = db;
+            _mapper = mapper;
         }
 
         public IEnumerable<CompetitionDto> GetAllAvailableCompetitions()
         {
-	        var competitions = _context.Competitions
-		        .Include(c => c.CreatedBy)
-		        .Where(x => !x.Finished)
-		        .AsEnumerable();
-	        return _mapper.Map<IEnumerable<Competition>, IEnumerable<CompetitionDto>>(competitions);
+            var competitions = _context.Competitions
+                .Include(c => c.CreatedBy)
+                .Where(x => !x.Finished);
+            return _mapper.Map<IQueryable<Competition>, IEnumerable<CompetitionDto>>(competitions);
+        }
+
+        public CarDto GetCar(IdentityUser user)
+        {
+            var car = _context.Cars
+                .Include(x => x.Owner)
+                .FirstOrDefaultAsync(x => x.Owner.Email == user.Email).Result;
+            return _mapper.Map<CarDto>(car);
+        }
+
+        public CarDto GetCarById(int? id) => _mapper.Map<CarDto>(
+            _context.Cars.Include(x => x.Owner).FirstOrDefault(c => c.Id == id)
+        );
+
+        public void SetCar(CarDto carDto)
+        {
+            var car = _mapper.Map<Car>(carDto);
+            var carToRemove = _context.Cars.FirstOrDefault(x => x.Owner.Email == car.Owner.Email);
+            if (carToRemove is not null)
+                _context.Cars.Remove(carToRemove);
+            _context.Cars.Add(car);
+            _context.SaveChanges();
         }
     }
 }

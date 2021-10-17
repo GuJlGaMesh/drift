@@ -33,6 +33,7 @@ namespace drift
             services.AddHttpContextAccessor();
 
             services.AddScoped<UserService, UserService>();
+            services.AddScoped<AuthService, AuthService>();
             services.AddScoped<CompetitionService, CompetitionService>();
             var mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
 

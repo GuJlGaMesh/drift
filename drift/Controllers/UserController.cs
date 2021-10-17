@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -16,21 +17,24 @@ namespace drift.Controllers
 	public class UserController : Controller
 	{
 		private readonly UserService _userService;
+		private readonly AuthService _authService;
 		private readonly ApplicationDbContext _context;
 		private readonly IMapper _mapper;
 
-		public UserController(IMapper mapper,UserService userService)
+		public UserController(IMapper mapper,UserService userService, AuthService authService)
 		{
 			_mapper = mapper;
 			_userService = userService;
-
+			_authService = authService;
 		}
 
 		// GET: User
 		public async Task<IActionResult> Index()
 		{
-			var competitions = _userService.GetAllAvailableCompetitions();
-			return View(competitions);
+			dynamic model = new ExpandoObject();
+			model.Competitions = _userService.GetAllAvailableCompetitions();
+			model.Car = _userService.GetCar(await _authService.GetCurrentUserAsync());
+			return View(model);
 		}
 
 		// GET: User/Details/5
@@ -52,6 +56,19 @@ namespace drift.Controllers
 			ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id");
 			return View();
 		}
+		
+		public IActionResult CreateCar()
+		{
+			return View();
+		}
+		[HttpPost]
+		public async Task<IActionResult> CreateCar([Bind("Name,Model")]CarDto car)
+		{
+			car.Owner = await _authService.GetCurrentUserAsync();
+			_userService.SetCar(car);
+			return RedirectToAction(nameof(Index));
+		}
+		
 
 		// POST: User/Create
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -83,7 +100,20 @@ namespace drift.Controllers
 			ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", competition.CreatedById);
 			return View(competition);
 		}
+		
+		public IActionResult EditCar(int? id)
+		{
+			return View(_userService.GetCarById(id));
+		}
 
+		[HttpPost]
+		public async Task<IActionResult> EditCar([FromForm] CarDto car)
+		{
+			car.Owner = await _authService.GetCurrentUserAsync();
+			_userService.SetCar(car);
+			return RedirectToAction(nameof(Index));
+		}
+		
 		public async Task<IActionResult> Participate(int? id)
 		{
 			if (id == null) return NotFound();

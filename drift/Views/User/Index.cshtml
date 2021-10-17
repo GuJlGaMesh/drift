@@ -1,44 +1,53 @@
-@model IEnumerable<drift.Models.Dto.CompetitionDto>
+@using drift.Models.Dto
+@model dynamic
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var car = Model.Car as CarDto;
+    var competitions = Model.Competitions as IEnumerable<CompetitionDto>;
 }
 
-<h1>Index</h1>
+<h1>Home</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="page-item mb-3">
+    @if (car is not null)
+    {
+        <div>Ваш автомобиль:</div>
+        <div>@car.Name @car.Model</div>
+        <div><button class="btn-link"><a asp-action="EditCar" asp-route-id="@car.Id">Редактировать</a></button></div>
+    }
+    else
+    {
+        <div>У вас нет автомобиля <button class="btn-link"><a asp-action="CreateCar">Добавить</a></button>?</div>
+    }
+</div>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.StartDate)
+                @Html.DisplayNameFor(model => competitions.First().StartDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatorUserName)
+                @Html.DisplayNameFor(model => competitions.First().CreatorUserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => competitions.First().Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RegistrationOpen)
+                @Html.DisplayNameFor(model => competitions.First().RegistrationOpen)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Finished)
+                @Html.DisplayNameFor(model => competitions.First().Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Fee)
+                @Html.DisplayNameFor(model => competitions.First().Fee)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in competitions) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.StartDate)
@@ -51,9 +60,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.RegistrationOpen)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Finished)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
