@@ -72,7 +72,7 @@ namespace drift.Controllers
 	        }
 	        catch
 	        {
-		        return ReturnWithError(nameof(Register), $"Регистрация для {model.UserName} не удалась.");
+		        return ReturnWithError(nameof(Register), $"Регистрация для {model.UserName} не удалась. Саня всё сломал.");
 	        }
         }
 
