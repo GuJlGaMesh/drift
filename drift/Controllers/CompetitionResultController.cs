@@ -1,4 +1,5 @@
-﻿using drift.Service;
+﻿using System;
+using drift.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -18,8 +19,9 @@ namespace drift.Controllers
         [HttpGet]
         public IActionResult GetResults(int competitionId)
         {
-            var competitionResults = _resultService.getResults(competitionId);
-            return View(competitionResults);
+            var bracket = _resultService.getResultsBracket(competitionId);
+            Console.WriteLine(bracket);
+            return View(bracket);
         }
     }
 }

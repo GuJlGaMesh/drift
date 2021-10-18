@@ -1,12 +1,10 @@
-﻿@model System.Collections.Generic.List<drift.Data.Entity.CompetitionResultDto>
+﻿@model drift.Models.Dto.CompetitionBracket
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
 @{
-    var paticipants = Model.ToList();
-    paticipants.Sort((a, b) => b.MainPhaseScore.CompareTo(a.MainPhaseScore));
 }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -53,9 +51,12 @@ function getRandomArbitrary(min, max) {
 }
  
 
-  var model = '@Html.Raw(Json.Serialize(paticipants))';
-    console.log(model);
-  var data = JSON.parse(model);
+  var model = '@Html.Raw(Json.Serialize(Model))';
+  var bigData = JSON.parse(model);
+  var data= bigData.firstStageResults;
+  var dataSecondStage = bigData.secondStageResults;
+  var dataThirdStage = bigData.thirdStageResults;
+  var dataFourthStage = bigData.fourthStageResults;
 let minimalData = {
      teams: [
        [data[0].participantName, data[1].participantName],
@@ -69,10 +70,10 @@ let minimalData = {
      ],
      results: [
          [
-           [[data[0].qualificationScore, data[1].qualificationScore], [data[2].qualificationScore, data[3].qualificationScore],[data[4].qualificationScore, data[5].qualificationScore], [data[6].qualificationScore, data[7].qualificationScore],[data[8].qualificationScore, data[9].qualificationScore],[data[10].qualificationScore, data[11].qualificationScore],[data[12].mainPhaseScore, data[13].qualificationScore], [data[14].qualificationScore, data[15].qualificationScore]],
-           [[data[0].mainPhaseScore, data[2].mainPhaseScore], [data[4].mainPhaseScore, data[6].mainPhaseScore],[data[8].mainPhaseScore, data[10].mainPhaseScore],[data[12].mainPhaseScore, data[14].mainPhaseScore]],
-           [[data[0].mainPhaseScore, data[4].mainPhaseScore], [data[8].mainPhaseScore, data[12].mainPhaseScore]],
-            [[data[0].mainPhaseScore, data[8].mainPhaseScore],[data[4].mainPhaseScore, data[12].mainPhaseScore]]
+           [[data[0].firstPhaseScore, data[1].firstPhaseScore], [data[2].firstPhaseScore, data[3].firstPhaseScore],[data[4].firstPhaseScore, data[5].firstPhaseScore], [data[6].firstPhaseScore, data[7].firstPhaseScore],[data[8].firstPhaseScore, data[9].firstPhaseScore],[data[10].firstPhaseScore, data[11].firstPhaseScore],[data[12].firstPhaseScore, data[13].firstPhaseScore], [data[14].firstPhaseScore, data[15].firstPhaseScore]],
+           [[dataSecondStage[0].secondPhaseScore, dataSecondStage[1].secondPhaseScore], [dataSecondStage[2].secondPhaseScore, dataSecondStage[3].secondPhaseScore],[dataSecondStage[4].secondPhaseScore, dataSecondStage[5].secondPhaseScore],[dataSecondStage[6].secondPhaseScore, dataSecondStage[7].secondPhaseScore]],
+           [[dataThirdStage[0].thirdPhaseScore, dataThirdStage[1].thirdPhaseScore], [dataThirdStage[2].thirdPhaseScore, dataThirdStage[3].thirdPhaseScore]],
+            [[dataFourthStage[0].fourthPhaseScore, dataFourthStage[1].fourthPhaseScore],[dataFourthStage[2].fourthPhaseScore, dataFourthStage[3].fourthPhaseScore]]
          ]
      ]
   }
@@ -93,21 +94,17 @@ let minimalData = {
         <th scope="col">UserName</th>
         <th scope="col">Number</th>
         <th scope="col">Car</th>
-        <th scope="col">Qualification Score</th>
-        <th scope="col">Main Phase Score</th>
         <th scope="col">Total Score</th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var result in @Model)
+    @foreach (var result in @Model.OverallResults)
     {
         <tr>
             <th scope="row">@result.Place</th>
-            <td>@result.ParticipantName</td>
+            <td>@result.User.UserName</td>
             <td>@result.CarNumber</td>
             <td>@result.ParticipantName</td>
-            <td>@result.QualificationScore</td>
-            <td>@result.MainPhaseScore</td>
             <td>@result.TotalScore</td>
         </tr>
     }
