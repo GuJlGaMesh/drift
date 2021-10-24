@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using drift.Data;
 using drift.Data.Entity;
 using drift.Models.Dto;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace drift.Service
 {
@@ -13,12 +15,15 @@ namespace drift.Service
         private ApplicationDbContext db;
         private IMapper _mapper;
         private UserService _userService;
+        private const int ResultSize = 16;
+        private Random _random;
 
         public CompetitionResultService(UserService userService, IMapper mapper, ApplicationDbContext db)
         {
             _userService = userService;
             _mapper = mapper;
             this.db = db;
+            _random = new Random();
         }
 
         private List<CompetitionResultDto> getResults(int competitionId)
@@ -31,6 +36,25 @@ namespace drift.Service
         {
             var result = getResultsDb(competitionId);
             return result.Select(dto => dto).OrderBy(dto => dto.Place).ToList();
+        }
+
+        private IQueryable<CompetitionScoreDto> getScoreDb(int competitionId)
+        {
+            var result = from cs in db.CompetitionScores
+                join c in db.Competitions on cs.CompetitionId equals c.Id
+                where cs.CompetitionId == competitionId
+                select new CompetitionScoreDto()
+                {
+                    Id = cs.Id,
+                    AngleScore = cs.AngleScore,
+                    StyleScore = cs.StyleScore,
+                    TrackScore = cs.TrackScore,
+                    Attempt = cs.Attempt,
+                    Competition = new CompetitionDto() {Id = cs.CompetitionId},
+                    Participant = _userService.findById(cs.ParticipantId),
+                    Total = cs.AngleScore + cs.TrackScore + cs.StyleScore
+                };
+            return result;
         }
 
 
@@ -51,9 +75,80 @@ namespace drift.Service
                     CarNumber = cr.CarNumber,
                     TotalScore = cr.TotalScore,
                     User = _userService.findById(cr.ParticipantId),
-                    ParticipantName = cr.ParticipantName
+                    ParticipantName = cr.ParticipantName,
                 };
             return result;
+        }
+
+        public List<CompetitionScoreDto> GetScore(int comeptitionId)
+        {
+            using (db)
+            {
+                var score = getScoreDb(comeptitionId).ToList();
+                foreach (var scoreDto in score)
+                {
+                    var participantScore = db.CompetitionScores
+                        .Where(cs => cs.CompetitionId == scoreDto.Competition.Id
+                                     && cs.ParticipantId == scoreDto.Participant.Id);
+
+                    scoreDto.BestAngle = participantScore.Max(cs => cs.AngleScore);
+                    scoreDto.BestTrack = participantScore.Max(cs => cs.TrackScore);
+                    scoreDto.BestStyle = participantScore.Max(cs => cs.StyleScore);
+                }
+
+                return score;
+            }
+        }
+
+        public void generateResults(int competitionId, string userId)
+        {
+            using (db)
+            {
+                var competition = getCompetition(competitionId, userId);
+                var fakeCarName = "Participant #";
+                var participantName = "Car #";
+                for (int i = 1; i <= ResultSize; i++)
+                {
+                    var result = new CompetitionResult()
+                    {
+                        CarNumber = i,
+                        CompetitionId = competition.Id,
+                        FirstPhaseScore = _random.Next(1, 100),
+                        FourthPhaseScore = _random.Next(1, 100),
+                        ParticipantCar = fakeCarName + i,
+                        ParticipantId = userId,
+                        ParticipantName = participantName + i,
+                        SecondPhaseScore = _random.Next(1, 100),
+                        ThirdPhaseScore = _random.Next(1, 100),
+                    };
+                    db.CompetitionResults.Add(result);
+                }
+
+                db.SaveChanges();
+            }
+        }
+
+        private Competition getCompetition(int competitionId, string userId)
+        {
+            var competition = getCompetitionDb(competitionId);
+
+            if (competition.CreatedById != userId)
+            {
+                throw new Exception("You can't access that competition ");
+            }
+
+            return competition;
+        }
+
+        private Competition? getCompetitionDb(int competitionId)
+        {
+            var competition = db.Competitions.FirstOrDefault(c => c.Id == competitionId);
+            if (competition == null)
+            {
+                throw new Exception("Competition not found with id " + competitionId);
+            }
+
+            return competition;
         }
 
         public CompetitionBracket getResultsBracket(int competitionId)

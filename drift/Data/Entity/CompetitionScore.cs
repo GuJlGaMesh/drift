@@ -13,6 +13,10 @@ namespace drift.Data.Entity
         public int StyleScore { get; set; }
         [Required] public int CompetitionId { get; set; }
         public int Attempt { get; set; }
-        public CompetitionType Type;
+
+        public override string ToString()
+        {
+            return $"{nameof(Id)}: {Id}, {nameof(ParticipantId)}: {ParticipantId}, {nameof(AngleScore)}: {AngleScore}, {nameof(TrackScore)}: {TrackScore}, {nameof(StyleScore)}: {StyleScore}, {nameof(CompetitionId)}: {CompetitionId}, {nameof(Attempt)}: {Attempt}";
+        }
     }
 }

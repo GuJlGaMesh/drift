@@ -36,7 +36,6 @@ namespace drift.Service
                         TrackScore = cs.TrackScore,
                         StyleScore = cs.StyleScore,
                         Attempt = cs.Attempt,
-                        Type = cs.Type,
                         Participant = _userService.findById(cs.ParticipantId)
                     };
                 return score.Select(dto => dto).ToList();
@@ -54,7 +53,6 @@ namespace drift.Service
                     CompetitionId = dto.Competition.Id,
                     AngleScore = dto.AngleScore,
                     Attempt = dto.Attempt,
-                    Type = dto.Type,
                 });
                 db.SaveChanges();
                 dto.Id = result.Entity.Id;

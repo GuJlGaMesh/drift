@@ -20,8 +20,22 @@ namespace drift.Controllers
         public IActionResult GetResults(int competitionId)
         {
             var bracket = _resultService.getResultsBracket(competitionId);
-            Console.WriteLine(bracket);
             return View(bracket);
+        }
+
+        [HttpGet]
+        public IActionResult GetScores(int competitionId)
+        {
+            var score = _resultService.GetScore(competitionId);
+            Console.WriteLine(String.Join(";/n", score));
+            return View(score);
+        }
+
+        [HttpGet] //todo: post
+        public IActionResult GenerateResults(int competitionId)
+        {
+            _resultService.generateResults(competitionId, HttpContext.User.Identity.Name);
+            return RedirectToAction("GetResults", new {competitionId = competitionId});
         }
     }
 }
