@@ -4,52 +4,35 @@
     ViewData["Title"] = "Participate";
 }
 
-<h1>Participate</h1>
-
-<h4>CompetitionApplicationDto</h4>
+<h1>Учавствовать</h1>
+@if (Model.PaidError)
+{
+    <div class="alert-danger">Должна быть оплата!</div>
+}
+@if (Model.ParticipantNumberError)
+{
+    <div class="alert-danger">Номер участника занят</div>
+}
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Participate">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CompetitionId" />
             <div class="form-group">
-                <label asp-for="ApplicantId" class="control-label"></label>
-                <input asp-for="ApplicantId" class="form-control" />
-                <span asp-validation-for="ApplicantId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CarId" class="control-label"></label>
-                <select asp-for="CarId" class="form-control" asp-items="ViewBag.CarId"></select>
-                <span asp-validation-for="CarId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+                <div>Ваш автомобиль:</div>
+                @Html.DisplayFor(x => x.CarModelAndName)<br/>
                 <label asp-for="ParticipantNumber" class="control-label"></label>
-                <input asp-for="ParticipantNumber" class="form-control" />
+                <input asp-for="ParticipantNumber" class="form-control"/>
                 <span asp-validation-for="ParticipantNumber" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Model" class="control-label"></label>
-                <input asp-for="Model" class="form-control" />
-                <span asp-validation-for="Model" class="text-danger"></span>
-            </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="ApprovedByMedics" /> @Html.DisplayNameFor(model => model.ApprovedByMedics)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="ApprovedByTech" /> @Html.DisplayNameFor(model => model.ApprovedByTech)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="ApprovedByOrganizer" /> @Html.DisplayNameFor(model => model.ApprovedByOrganizer)
+                    <input class="form-check-input" asp-for="Paid" /> @Html.DisplayNameFor(model => model.Paid)
                 </label>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
             </div>
         </form>
     </div>

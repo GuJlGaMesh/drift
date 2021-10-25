@@ -23,18 +23,20 @@ namespace drift.Service
         private SignInManager<IdentityUser> _signInManager;
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly AuthService _authService;
         private IHttpContextAccessor _httpContext;
 
         private const string USER_ROLE = "USER";
 
         public UserService(ApplicationDbContext db, UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, IMapper mapper)
+            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, IMapper mapper, AuthService authService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _context = db;
             _mapper = mapper;
+            _authService = authService;
         }
 
         public IEnumerable<CompetitionDto> GetAllAvailableCompetitions()
@@ -64,6 +66,30 @@ namespace drift.Service
             if (carToRemove is not null)
                 _context.Cars.Remove(carToRemove);
             _context.Cars.Add(car);
+            _context.SaveChanges();
+        }
+
+        public CompetitionDto GetCompetition(int? id)
+        {
+            var competition = _context.Competitions.Find(id);
+            return _mapper.Map<CompetitionDto>(competition);
+        }
+
+        public bool CheckAvailabilityOfParticipantNumber(int dtoParticipantNumber)
+        {
+            if (_context.CompetitionApplications.Count(x => x.ParticipantNumber == dtoParticipantNumber) > 0)
+                return false;
+            return true;
+        }
+
+        public void SaveNewCompetitionApplication(CompetitionApplicationDto dto)
+        {
+            var competitionApplication = _mapper.Map<CompetitionApplication>(dto);
+            var user = _authService.GetCurrentUserAsync().Result;
+            competitionApplication.IdentityUser = user;
+            competitionApplication.CarId = GetCar(user).Id;
+            competitionApplication.ApplicantId = user.Id;
+            _context.CompetitionApplications.Add(competitionApplication);
             _context.SaveChanges();
         }
     }

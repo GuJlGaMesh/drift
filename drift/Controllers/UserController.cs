@@ -118,12 +118,40 @@ namespace drift.Controllers
 		{
 			if (id == null) return NotFound();
 
-			var competition = await _context.Competitions.FindAsync(id);
+			var competition = _userService.GetCompetition(id);
+			var user = await _authService.GetCurrentUserAsync();
+			var car = _userService.GetCar(user);
 			if (competition == null) return NotFound();
-			ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", competition.CreatedById);
-			return View();
+			var competitionApplication = new CompetitionApplicationDto()
+			{
+				CarModelAndName = car.Name + car.Model,
+				CompetitionId = id.Value
+			};
+			//ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", competition.CreatedById);
+			return View(competitionApplication);
 		}
 
+		[HttpPost]
+		public async Task<IActionResult> Participate(CompetitionApplicationDto dto)
+		{
+			//TODO: заменять кнопку когда участие добавлено на кнопку "ожидайте щас всё будет"
+			if (dto == null) return NotFound();
+			var numAvailable = _userService.CheckAvailabilityOfParticipantNumber(dto.ParticipantNumber);
+			if (!numAvailable)
+				dto.ParticipantNumberError = true;
+			if (!dto.Paid)
+				dto.PaidError = true;
+			if (dto.PaidError || dto.ParticipantNumberError)
+				return View(dto);
+			
+			var user = await _authService.GetCurrentUserAsync();
+			dto.ApplicantId = user.Id;
+
+			_userService.SaveNewCompetitionApplication(dto);
+			
+			return Redirect(nameof(Index));
+		}
+		
 		// POST: User/Edit/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
