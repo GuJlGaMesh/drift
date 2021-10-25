@@ -37,6 +37,7 @@ namespace drift.Service
             _context = db;
             _mapper = mapper;
             _httpContext = httpContext.HttpContext;
+            _userManager.PasswordValidators.Clear();
         }
 
         public async Task<IdentityUser> GetCurrentUserAsync()
@@ -53,9 +54,10 @@ namespace drift.Service
 
             var user = new IdentityUser()
             {
-                Email = request.Email, UserName = request.UserName, EmailConfirmed = true
+                Email = request.Email, UserName = request.Email, EmailConfirmed = true
             };
-            if (!_userManager.CreateAsync(user, request.Password).Result.Succeeded)
+            var userResult = await _userManager.CreateAsync(user, request.Password);
+            if (!userResult.Succeeded)
             {
                 throw new Exception("Error creating user");
             }
@@ -74,8 +76,7 @@ namespace drift.Service
         public async Task<UserCredentialsTemplate> Login(LoginRequest loginRequest)
         {
             var existingUser = await _userManager.FindByEmailAsync(loginRequest.Email);
-            var result = _signInManager.PasswordSignInAsync(existingUser.Email, loginRequest.Password, true, false)
-                .Result;
+            var result = await _signInManager.PasswordSignInAsync(existingUser.Email, loginRequest.Password, true, false);
             if (!result.Succeeded)
             {
                 throw new Exception("Error logging in");
