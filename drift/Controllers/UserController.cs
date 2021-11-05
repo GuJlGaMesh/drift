@@ -34,6 +34,8 @@ namespace drift.Controllers
 			dynamic model = new ExpandoObject();
 			model.Competitions = _userService.GetAllAvailableCompetitions();
 			model.Car = _userService.GetCar(await _authService.GetCurrentUserAsync());
+			model.IsParticipant = _userService.IsAlreadyParticipate();
+			model.IsApproved = _userService.IsApplicantApproved();
 			return View(model);
 		}
 
@@ -134,7 +136,6 @@ namespace drift.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Participate(CompetitionApplicationDto dto)
 		{
-			//TODO: заменять кнопку когда участие добавлено на кнопку "ожидайте щас всё будет"
 			if (dto == null) return NotFound();
 			var numAvailable = _userService.CheckAvailabilityOfParticipantNumber(dto.ParticipantNumber);
 			if (!numAvailable)

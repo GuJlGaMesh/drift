@@ -62,7 +62,7 @@ namespace drift.Service
                 throw new Exception("Error creating user");
             }
 
-            var userRole = Enum.GetName(request.Role) ?? USER_ROLE;
+            var userRole = Enum.GetName(request.RoleEnum) ?? USER_ROLE;
 
             if (!_roleManager.RoleExistsAsync(userRole).Result)
             {

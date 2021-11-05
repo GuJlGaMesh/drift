@@ -5,6 +5,6 @@
         private string Email { get; set; }
         private string UserName { get; set; }
         private string Password { get; set; }
-        public UserRole Role { get; set; }
+        public UserRoleEnum RoleEnum { get; set; }
     }
 }

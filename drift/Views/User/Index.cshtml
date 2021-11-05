@@ -6,6 +6,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var car = Model.Car as CarDto;
     var competitions = Model.Competitions as IEnumerable<CompetitionDto>;
+	var isParticipant = Model.IsParticipant as bool?;
+	var isApproved = Model.IsApproved as bool?;
 }
 
 <h1>Home</h1>
@@ -67,9 +69,20 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Fee)
             </td>
-            <td>
-                <button ><a asp-action="Participate" asp-route-id="@item.Id">Participate</a></button>
-            </td>
+	        <td>
+                @if (isParticipant.Value && isApproved.Value)
+                {
+	                <button ><a asp-action="GetCompetitionResults" asp-route-id="@item.Id">Результаты</a></button>
+                }
+		        @if (isParticipant.Value)
+		        {
+			        <button ><a>Ждите подтверждения заявки</a></button>
+		        }
+		        else
+		        {
+			<button><a asp-action="Participate" asp-route-id="@item.Id">Участвовать</a></button>
+		        }
+	        </td>
         </tr>
 }
     </tbody>

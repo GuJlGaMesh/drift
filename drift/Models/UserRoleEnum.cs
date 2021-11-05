@@ -1,6 +1,6 @@
 ﻿namespace drift.Models
 {
-    public enum UserRole
+    public enum UserRoleEnum
     {
         USER=1,
         ORGANIZER=2,

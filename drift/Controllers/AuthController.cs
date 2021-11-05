@@ -37,16 +37,28 @@ namespace drift.Controllers
 		        var authModel = await _authService.Login(model);
 
 		        await Authenticate(authModel.Email, authModel.Role, authModel.UserId);
+				
+		        // удалить после добавления
+		        // var med = new RegisterRequest()
+		        // {
+			       //  Email = "med@med.ru", Password = "123", RoleEnum = UserRoleEnum.MEDICAL_COMMISSION
+		        // };
+		        // var tech = new RegisterRequest()
+		        // {
+			       //  Email = "tech@tech.ru", Password = "123", RoleEnum = UserRoleEnum.TECH_COMMISSION
+		        // };
+		        // await _authService.Register(med);
+		        // await _authService.Register(tech);
 
-
-		        if (authModel.Role == UserRole.USER.ToString())
+		        if (authModel.Role == UserRoleEnum.USER.ToString())
 			        return RedirectToAction("Index", "User");
-		        if (authModel.Role == UserRole.ORGANIZER.ToString())
-		        return RedirectToAction("CreateCompetition", "Competition");
-		        // if (authModel.Role == UserRole.TECH_COMMISSION.ToString())
-		        // return RedirectToAction("Index", "Tech");
-		        // if (authModel.Role == UserRole.MEDICAL_COMMISSION.ToString())
-		        // return RedirectToAction("Index", "Medical");
+		        if (authModel.Role == UserRoleEnum.ORGANIZER.ToString())
+					return RedirectToAction("CreateCompetition", "Competition");
+		        if (authModel.Role == UserRoleEnum.TECH_COMMISSION.ToString())
+					return RedirectToAction("Index", "Tech");
+		        if (authModel.Role == UserRoleEnum.MEDICAL_COMMISSION.ToString())
+					return RedirectToAction("Index", "Medical");
+		        
 		        return RedirectToAction("Index", "Home");
             }
 	        catch

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
 namespace drift.Data.Entity
@@ -15,20 +11,23 @@ namespace drift.Data.Entity
 		[Required]
 		[ForeignKey(nameof(IdentityUser))]
 		public string ApplicantId { get; set; }
-		[Required]
-		public int CarId { get; set; }
+
+		[Required] public int CarId { get; set; }
+
 		public Car Car { get; set; }
-		[Required]
-		public int ParticipantNumber { get; set; }
+
+		[Required] public int ParticipantNumber { get; set; }
+
 		public double Model { get; set; }
+
 		//owner id
 		public IdentityUser IdentityUser { get; set; }
-		[Required]
-		public int CompetitionId { get; set; }
-		public Competition Competition { get; set; }
 
+		[Required] public int CompetitionId { get; set; }
+
+		public Competition Competition { get; set; }
 		public bool ApprovedByMedics { get; set; }
-		public bool ApprovedByTech{ get; set; }
-		public bool ApprovedByOrganizer{ get; set; }
+		public bool ApprovedByTech { get; set; }
+		public bool ApprovedByOrganizer { get; set; }
 	}
 }

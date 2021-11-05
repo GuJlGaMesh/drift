@@ -47,6 +47,13 @@ namespace drift.Service
             return _mapper.Map<IQueryable<Competition>, IEnumerable<CompetitionDto>>(competitions);
         }
 
+        public bool IsAlreadyParticipate()
+        {
+	        var user = _authService.GetCurrentUserAsync().Result;
+	        var count = _context.CompetitionApplications.Count(x => x.ApplicantId == user.Id);
+	        return count > 0;
+        }
+
         public CarDto GetCar(IdentityUser user)
         {
             var car = _context.Cars
@@ -91,6 +98,13 @@ namespace drift.Service
             competitionApplication.ApplicantId = user.Id;
             _context.CompetitionApplications.Add(competitionApplication);
             _context.SaveChanges();
+        }
+
+        public bool IsApplicantApproved()
+        {
+	        var user = _authService.GetCurrentUserAsync().Result;
+	        var application = _context.CompetitionApplications.FirstOrDefault(x => x.ApplicantId== user.Id) ?? new CompetitionApplication {ApprovedByMedics = false, ApprovedByOrganizer = false, ApprovedByTech = false};
+	        return application.ApprovedByMedics && application.ApprovedByOrganizer && application.ApprovedByTech;
         }
     }
 }
