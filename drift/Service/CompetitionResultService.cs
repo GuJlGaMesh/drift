@@ -51,7 +51,7 @@ namespace drift.Service
                     TrackScore = cs.TrackScore,
                     Attempt = cs.Attempt,
                     Competition = new CompetitionDto() {Id = cs.CompetitionId},
-                    Participant = _userService.findById(cs.ParticipantId),
+                    ParticipantName = cs.ParticipantName,
                     Total = cs.AngleScore + cs.TrackScore + cs.StyleScore
                 };
             return result;
@@ -89,7 +89,7 @@ namespace drift.Service
                 {
                     var participantScore = db.CompetitionScores
                         .Where(cs => cs.CompetitionId == scoreDto.Competition.Id
-                                     && cs.ParticipantId == scoreDto.Participant.Id);
+                                     && cs.ParticipantName == scoreDto.ParticipantName);
 
                     scoreDto.BestAngle = participantScore.Max(cs => cs.AngleScore);
                     scoreDto.BestTrack = participantScore.Max(cs => cs.TrackScore);
@@ -105,9 +105,32 @@ namespace drift.Service
             using (db)
             {
                 var competition = getCompetition(competitionId, userId);
+                if (competition.Finished)
+                {
+                    return;
+                }
+
+                var applications = _userService.getApprovedApplicationsByCompetition(competitionId);
                 var fakeCarName = "Participant #";
                 var participantName = "Car #";
-                for (int i = 1; i <= ResultSize; i++)
+                for (int i = 0; i < applications.Count; i++)
+                {
+                    var result = new CompetitionResult()
+                    {
+                        CarNumber = applications[i].ParticipantNumber,
+                        CompetitionId = competition.Id,
+                        FirstPhaseScore = _random.Next(1, 100),
+                        FourthPhaseScore = _random.Next(1, 100),
+                        ParticipantCar = applications[i].CarModelAndName,
+                        ParticipantId = applications[i].ApplicantId,
+                        ParticipantName = applications[i].CarModelAndName,
+                        SecondPhaseScore = _random.Next(1, 100),
+                        ThirdPhaseScore = _random.Next(1, 100),
+                    };
+                    db.CompetitionResults.Add(result);
+                }
+
+                for (int i = 1; i <= ResultSize - applications.Count; i++)
                 {
                     var result = new CompetitionResult()
                     {
@@ -124,8 +147,37 @@ namespace drift.Service
                     db.CompetitionResults.Add(result);
                 }
 
+                competition.Finished = true;
+                db.Competitions.Update(competition);
                 db.SaveChanges();
+                generateScores(competition);
             }
+        }
+
+        public void generateScores(Competition competition)
+        {
+            var results = getResults(competition.Id);
+            var resultsScore = new List<CompetitionScore>();
+            foreach (var result in results)
+            {
+                for (int i = 1; i <= 3; i++)
+                {
+                    var score = new CompetitionScore()
+                    {
+                        AngleScore = _random.Next(1, 100),
+                        StyleScore = _random.Next(1, 100),
+                        TrackScore = _random.Next(1, 100),
+                        Attempt = i,
+                        CompetitionId = competition.Id,
+                        ParticipantId = result.User.Id,
+                        ParticipantName = result.ParticipantName
+                    };
+                    resultsScore.Add(score);
+                }
+            }
+
+            db.CompetitionScores.AddRange(resultsScore);
+            db.SaveChanges();
         }
 
         private Competition getCompetition(int competitionId, string userId)

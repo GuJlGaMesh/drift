@@ -14,6 +14,8 @@ namespace drift.Data.Entity
         [Required] public int CompetitionId { get; set; }
         public int Attempt { get; set; }
 
+        public string ParticipantName { get; set; }
+
         public override string ToString()
         {
             return $"{nameof(Id)}: {Id}, {nameof(ParticipantId)}: {ParticipantId}, {nameof(AngleScore)}: {AngleScore}, {nameof(TrackScore)}: {TrackScore}, {nameof(StyleScore)}: {StyleScore}, {nameof(CompetitionId)}: {CompetitionId}, {nameof(Attempt)}: {Attempt}";

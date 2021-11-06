@@ -45,5 +45,6 @@ namespace drift.Service
             Console.WriteLine(string.Join("\t", competitions));
             return _mapper.Map<IEnumerable<Competition>, List<CompetitionDto>>(competitions);
         }
+        
     }
 }

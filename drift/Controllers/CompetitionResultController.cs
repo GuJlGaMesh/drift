@@ -27,11 +27,10 @@ namespace drift.Controllers
         public IActionResult GetScores(int competitionId)
         {
             var score = _resultService.GetScore(competitionId);
-            Console.WriteLine(String.Join(";/n", score));
             return View(score);
         }
 
-        [HttpGet] //todo: post
+        [HttpGet]
         public IActionResult GenerateResults(int competitionId)
         {
             _resultService.generateResults(competitionId, HttpContext.User.Identity.Name);

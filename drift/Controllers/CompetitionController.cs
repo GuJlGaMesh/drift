@@ -17,10 +17,12 @@ namespace drift.Controllers
     public class CompetitionController : Controller
     {
         private CompetitionService _competitionService;
+        private UserService _userService;
 
-        public CompetitionController(CompetitionService competitionService)
+        public CompetitionController(CompetitionService competitionService, UserService userService)
         {
             _competitionService = competitionService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -42,6 +44,8 @@ namespace drift.Controllers
         public IActionResult GetCompetition(int id)
         {
             var competition = _competitionService.GetById(id);
+            var applications = _userService.getApprovedApplicationsByCompetition(competition.Id);
+            competition.Applications = applications;
             return View(competition);
         }
 

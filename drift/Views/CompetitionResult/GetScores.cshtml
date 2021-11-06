@@ -16,12 +16,12 @@
     </tr>
     </thead>
     <tbody>
-    @for (var i = 0; i < Model.Capacity; i++)
+    @for (var i = 0; i < Model.Count; i++)
     {
         <tr class="bg-info">
-            @if (i == 0 || @Model[i].Participant.Id != @Model[i - 1].Participant.Id)
+            @if (i == 0 || @Model[i].ParticipantName != @Model[i - 1].ParticipantName)
             {
-                <th scope="col" >@Model[i].Participant.UserName</th>
+                <th scope="col" >@Model[i].ParticipantName</th>
             }
             else
             {
@@ -33,7 +33,7 @@
             <th scope="col">@Model[i].Attempt</th>
             <th scope="col">@Model[i].Total</th>
         </tr>
-        @if (i == @Model.Capacity - 1 || @Model[i].Participant.Id != @Model[i + 1].Participant.Id)
+        @if (i == @Model.Count - 1 || @Model[i].ParticipantName!= @Model[i + 1].ParticipantName)
         {
             <tr class="bg-success">
                 <th scope="col">Best</th>
