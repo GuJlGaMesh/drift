@@ -1,0 +1,49 @@
+﻿@model System.Collections.Generic.List<drift.Data.Entity.CompetitionScoreDto>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<table class="table">
+    <thead>
+    <tr class="bg-primary">
+        <th scope="col">Paricipant</th>
+        <th scope="col">Angle Score</th>
+        <th scope="col">Track Score</th>
+        <th scope="col">Style Score</th>
+        <th scope="col">Attempt</th>
+        <th scope="col">Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    @for (var i = 0; i < Model.Count; i++)
+    {
+        <tr class="bg-info">
+            @if (i == 0 || @Model[i].ParticipantName != @Model[i - 1].ParticipantName)
+            {
+                <th scope="col" >@Model[i].ParticipantName</th>
+            }
+            else
+            {
+                <th></th>
+            }
+            <th scope="col">@Model[i].AngleScore</th>
+            <th scope="col">@Model[i].TrackScore</th>
+            <th scope="col">@Model[i].StyleScore</th>
+            <th scope="col">@Model[i].Attempt</th>
+            <th scope="col">@Model[i].Total</th>
+        </tr>
+        @if (i == @Model.Count - 1 || @Model[i].ParticipantName!= @Model[i + 1].ParticipantName)
+        {
+            <tr class="bg-success">
+                <th scope="col">Best</th>
+                <th scope="col">@Model[i].BestAngle</th>
+                <th scope="col">@Model[i].BestTrack</th>
+                <th scope="col">@Model[i].BestStyle</th>
+                <th></th>
+                <th></th>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

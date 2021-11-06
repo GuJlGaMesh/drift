@@ -31,5 +31,10 @@ namespace drift.Models.Dto
 		public bool ApprovedByMedics { get; set; }
 		public bool ApprovedByTech { get; set; }
 		public bool ApprovedByOrganizer { get; set; }
+
+		public override string ToString()
+		{
+			return $"{nameof(ApplicationId)}: {ApplicationId}, {nameof(ApplicantId)}: {ApplicantId}, {nameof(CarId)}: {CarId}, {nameof(Car)}: {Car}, {nameof(ParticipantNumber)}: {ParticipantNumber}, {nameof(Paid)}: {Paid}, {nameof(CompetitionId)}: {CompetitionId}, {nameof(Competition)}: {Competition}, {nameof(CarModelAndName)}: {CarModelAndName}, {nameof(IdentityUser)}: {IdentityUser}, {nameof(ParticipantName)}: {ParticipantName}, {nameof(PaidError)}: {PaidError}, {nameof(ParticipantNumberError)}: {ParticipantNumberError}, {nameof(ApprovedByMedics)}: {ApprovedByMedics}, {nameof(ApprovedByTech)}: {ApprovedByTech}, {nameof(ApprovedByOrganizer)}: {ApprovedByOrganizer}";
+		}
 	}
 }

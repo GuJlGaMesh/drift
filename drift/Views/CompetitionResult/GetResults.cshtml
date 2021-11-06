@@ -1,0 +1,112 @@
+﻿@model drift.Models.Dto.CompetitionBracket
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+@{
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://www.aropupu.fi/bracket/jquery-bracket/dist/jquery.bracket.min.js"></script>
+
+<script type="text/javascript">
+
+function SelectWinners()
+{
+    let topEightIds = ['#1-1','#5-1','#9-1','#13-1','#17-1','#21-1','#25-1','#29-1'];
+    let topFourIds = ['#3-2','#11-2','#19-2','#27-2','#35-1'];
+    let topTwoIds = ['#7-3','#23-3'];
+    let winnerId = ['#15-4'];
+    topEightIds.forEach((topEight)=>{
+        let i = parseInt(topEight.substr(topEight.indexOf('#')+1,topEight.indexOf('-')-1));
+        let firstParticpantNumber =parseInt( $(`#${i-1}-0`).html());
+        let secondParticpantNumber = parseInt($(`#${i+1}-0`).html());
+        let  res = Math.min(firstParticpantNumber,secondParticpantNumber);
+        $(`${topEight}`).html(res);
+    });
+    topFourIds.forEach((topFour)=>{
+             let i = parseInt(topFour.substr(topFour.indexOf('#')+1,topFour.indexOf('-')-1));
+             let firstParticpantNumber =parseInt( $(`#${i-2}-1`).html());
+             let secondParticpantNumber = parseInt($(`#${i+2}-1`).html());
+             let  res = Math.min(firstParticpantNumber,secondParticpantNumber);
+             $(`${topFour}`).html(res);
+    });
+    topTwoIds.forEach((topTwo)=>{
+             let i = parseInt(topTwo.substr(topTwo.indexOf('#')+1,topTwo.indexOf('-')-1));
+             let firstParticpantNumber =parseInt( $(`#${i-4}-2`).html());
+             let secondParticpantNumber = parseInt($(`#${i+4}-2`).html());
+             let  res = Math.min(firstParticpantNumber,secondParticpantNumber);
+             $(`${topTwo}`).html(res);
+        });
+     let firstParticpantNumber =parseInt( $(`#7-3`).html());
+     let secondParticpantNumber = parseInt($(`#23-3`).html());
+     let  res = Math.min(firstParticpantNumber,secondParticpantNumber);
+     $(`${winnerId}`).html(res);
+    
+}
+
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
+ 
+
+  var model = '@Html.Raw(Json.Serialize(Model))';
+  var bigData = JSON.parse(model);
+  var data= bigData.firstStageResults;
+  var dataSecondStage = bigData.secondStageResults;
+  var dataThirdStage = bigData.thirdStageResults;
+  var dataFourthStage = bigData.fourthStageResults;
+let minimalData = {
+     teams: [
+       [data[0].participantName, data[1].participantName],
+       [data[2].participantName, data[3].participantName],
+       [data[4].participantName, data[5].participantName],
+       [data[6].participantName, data[7].participantName],
+       [data[8].participantName, data[9].participantName],
+       [data[10].participantName, data[11].participantName],
+       [data[12].participantName, data[13].participantName],
+       [data[14].participantName, data[15].participantName]
+     ],
+     results: [
+         [
+           [[data[0].firstPhaseScore, data[1].firstPhaseScore], [data[2].firstPhaseScore, data[3].firstPhaseScore],[data[4].firstPhaseScore, data[5].firstPhaseScore], [data[6].firstPhaseScore, data[7].firstPhaseScore],[data[8].firstPhaseScore, data[9].firstPhaseScore],[data[10].firstPhaseScore, data[11].firstPhaseScore],[data[12].firstPhaseScore, data[13].firstPhaseScore], [data[14].firstPhaseScore, data[15].firstPhaseScore]],
+           [[dataSecondStage[0].secondPhaseScore, dataSecondStage[1].secondPhaseScore], [dataSecondStage[2].secondPhaseScore, dataSecondStage[3].secondPhaseScore],[dataSecondStage[4].secondPhaseScore, dataSecondStage[5].secondPhaseScore],[dataSecondStage[6].secondPhaseScore, dataSecondStage[7].secondPhaseScore]],
+           [[dataThirdStage[0].thirdPhaseScore, dataThirdStage[1].thirdPhaseScore], [dataThirdStage[2].thirdPhaseScore, dataThirdStage[3].thirdPhaseScore]],
+            [[dataFourthStage[0].fourthPhaseScore, dataFourthStage[1].fourthPhaseScore],[dataFourthStage[2].fourthPhaseScore, dataFourthStage[3].fourthPhaseScore]]
+         ]
+     ]
+  }
+ 
+      
+   $(document).ready(function ($) {
+      $('.something').bracket({
+             init: minimalData,
+            });
+   })
+
+</script>
+<div class="something"></div>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Place</th>
+        <th scope="col">UserName</th>
+        <th scope="col">Number</th>
+        <th scope="col">Car</th>
+        <th scope="col">Total Score</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var result in @Model.OverallResults)
+    {
+        <tr>
+            <th scope="row">@result.Place</th>
+            <td>@result.User.UserName</td>
+            <td>@result.CarNumber</td>
+            <td>@result.ParticipantName</td>
+            <td>@result.TotalScore</td>
+        </tr>
+    }
+    </tbody>
+</table>

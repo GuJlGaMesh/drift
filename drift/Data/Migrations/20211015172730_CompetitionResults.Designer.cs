@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using drift.Data;
 
 namespace drift.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211015172730_CompetitionResults")]
+    partial class CompetitionResults
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,7 +292,7 @@ namespace drift.Data.Migrations
 
                     b.Property<string>("ApplicantId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ApprovedByMedics")
                         .HasColumnType("bit");
@@ -304,8 +306,8 @@ namespace drift.Data.Migrations
                     b.Property<int>("CarId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CompetitionId")
-                        .HasColumnType("int");
+                    b.Property<string>("IdentityUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<double>("Model")
                         .HasColumnType("float");
@@ -315,11 +317,9 @@ namespace drift.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicantId");
-
                     b.HasIndex("CarId");
 
-                    b.HasIndex("CompetitionId");
+                    b.HasIndex("IdentityUserId");
 
                     b.ToTable("CompetitionApplications");
                 });
@@ -334,13 +334,7 @@ namespace drift.Data.Migrations
                     b.Property<int>("CarNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("CompetitionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FirstPhaseScore")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FourthPhaseScore")
+                    b.Property<int>("MainPhaseScore")
                         .HasColumnType("int");
 
                     b.Property<string>("ParticipantCar")
@@ -356,10 +350,7 @@ namespace drift.Data.Migrations
                     b.Property<int>("Place")
                         .HasColumnType("int");
 
-                    b.Property<int>("SecondPhaseScore")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ThirdPhaseScore")
+                    b.Property<int>("QualificationScore")
                         .HasColumnType("int");
 
                     b.Property<int>("TotalScore")
@@ -388,9 +379,6 @@ namespace drift.Data.Migrations
 
                     b.Property<string>("ParticipantId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ParticipantName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StyleScore")
@@ -477,27 +465,17 @@ namespace drift.Data.Migrations
 
             modelBuilder.Entity("drift.Data.Entity.CompetitionApplication", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("drift.Data.Entity.Car", "Car")
                         .WithMany()
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("drift.Data.Entity.Competition", "Competition")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
                         .WithMany()
-                        .HasForeignKey("CompetitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdentityUserId");
 
                     b.Navigation("Car");
-
-                    b.Navigation("Competition");
 
                     b.Navigation("IdentityUser");
                 });

@@ -12,8 +12,10 @@ namespace drift.Data
 		{
 		}
 
-		public DbSet<Car> Cars { get; set; }
-		public DbSet<CompetitionApplication> CompetitionApplications { get; set; }
-		public DbSet<Competition> Competitions { get; set; }
-	}
+        public DbSet<Car> Cars { get; set; }
+        public DbSet<CompetitionApplication> CompetitionApplications { get; set; }
+        public DbSet<Competition> Competitions { get; set; }
+        public DbSet<CompetitionScore> CompetitionScores { get; set; }
+        public DbSet<CompetitionResult> CompetitionResults { get; set; }
+    }
 }

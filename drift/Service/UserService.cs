@@ -8,6 +8,7 @@ using AutoMapper;
 using drift.Data;
 using drift.Data.Entity;
 using drift.Models.Dto;
+using drift.Models.Dto;
 using drift.Models.Request;
 using drift.Models.Template;
 using Microsoft.AspNetCore.Http;
@@ -29,7 +30,8 @@ namespace drift.Service
         private const string USER_ROLE = "USER";
 
         public UserService(ApplicationDbContext db, UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, IMapper mapper, AuthService authService)
+            RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager, IMapper mapper,
+            AuthService authService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -37,6 +39,17 @@ namespace drift.Service
             _context = db;
             _mapper = mapper;
             _authService = authService;
+        }
+
+        public UserDto findById(string userId)
+        {
+            var user = _userManager.FindByIdAsync(userId).Result;
+            return new UserDto()
+            {
+                Email = user.Email,
+                Id = user.Id,
+                UserName = user.UserName
+            };
         }
 
         public IEnumerable<CompetitionDto> GetAllAvailableCompetitions()
@@ -49,9 +62,9 @@ namespace drift.Service
 
         public bool IsAlreadyParticipate()
         {
-	        var user = _authService.GetCurrentUserAsync().Result;
-	        var count = _context.CompetitionApplications.Count(x => x.ApplicantId == user.Id);
-	        return count > 0;
+            var user = _authService.GetCurrentUserAsync().Result;
+            var count = _context.CompetitionApplications.Count(x => x.ApplicantId == user.Id);
+            return count > 0;
         }
 
         public CarDto GetCar(IdentityUser user)
@@ -100,11 +113,36 @@ namespace drift.Service
             _context.SaveChanges();
         }
 
+        public List<CompetitionApplicationDto> getApprovedApplicationsByCompetition(int comeptitionId)
+        {
+            var applications = from ca in _context.CompetitionApplications
+                join c in _context.Cars on ca.CarId equals c.Id
+                where ca.ApprovedByMedics == true && ca.ApprovedByOrganizer == true && ca.ApprovedByTech == true
+                      && ca.CompetitionId == comeptitionId
+                select new CompetitionApplicationDto()
+                {
+                    ApplicantId = ca.ApplicantId,
+                    ApplicationId = ca.Id,
+                    ApprovedByMedics = ca.ApprovedByMedics,
+                    ApprovedByOrganizer = ca.ApprovedByOrganizer,
+                    ApprovedByTech = ca.ApprovedByTech,
+                    Car = ca.Car,
+                    CarId = ca.CarId,
+                    CarModelAndName = ca.Car.Model + " " + ca.Car.Name,
+                    Competition = ca.Competition,
+                    CompetitionId = ca.CompetitionId,
+                    ParticipantNumber = ca.ParticipantNumber
+                };
+            return applications.ToList();
+        }
+
         public bool IsApplicantApproved()
         {
-	        var user = _authService.GetCurrentUserAsync().Result;
-	        var application = _context.CompetitionApplications.FirstOrDefault(x => x.ApplicantId== user.Id) ?? new CompetitionApplication {ApprovedByMedics = false, ApprovedByOrganizer = false, ApprovedByTech = false};
-	        return application.ApprovedByMedics && application.ApprovedByOrganizer && application.ApprovedByTech;
+            var user = _authService.GetCurrentUserAsync().Result;
+            var application = _context.CompetitionApplications.FirstOrDefault(x => x.ApplicantId == user.Id) ??
+                              new CompetitionApplication
+                                  {ApprovedByMedics = false, ApprovedByOrganizer = false, ApprovedByTech = false};
+            return application.ApprovedByMedics && application.ApprovedByOrganizer && application.ApprovedByTech;
         }
     }
 }
