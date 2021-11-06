@@ -25,7 +25,7 @@
             <p class="mb-1">@application.ApprovedByOrganizer</p>
         </li>
     }
-    @if (!@Model.Finished)
+    @if ((bool) !@Model.Finished)
     {
         @Html.ActionLink("Start competition", "GenerateResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1"})
     }

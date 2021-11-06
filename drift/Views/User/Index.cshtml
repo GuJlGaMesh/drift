@@ -6,8 +6,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var car = Model.Car as CarDto;
     var competitions = Model.Competitions as IEnumerable<CompetitionDto>;
-    var isParticipant = Model.IsParticipant as bool?;
-    var isApproved = Model.IsApproved as bool?;
 }
 
 <h1>Home</h1>
@@ -80,22 +78,22 @@
                 @Html.DisplayFor(modelItem => item.Fee)
             </td>
             <td>
-                @if (isParticipant.Value && isApproved.Value)
+                @if (item.Participating && item.Finished)
                 {
                     <button >
-                        @Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1"})
+                        @Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new {competitionId = item.Id}, new {@class = "mb-1"})
                     </button>
                     <button >
-                        @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1"})
+                        @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = item.Id}, new {@class = "mb-1"})
                     </button>
                 }
-                @if (isParticipant.Value)
+                @if (item.Participating && !item.Finished)
                 {
                     <button >
                         <a>Ждите подтверждения заявки</a>
                     </button>
                 }
-                else
+                @if (!item.Participating && !item.Finished)
                 {
                     <button>
                         <a asp-action="Participate" asp-route-id="@item.Id">Участвовать</a>

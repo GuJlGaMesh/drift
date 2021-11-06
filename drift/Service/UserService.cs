@@ -55,15 +55,21 @@ namespace drift.Service
         public IEnumerable<CompetitionDto> GetAllAvailableCompetitions()
         {
             var competitions = _context.Competitions
-                .Include(c => c.CreatedBy)
-                .Where(x => !x.Finished);
-            return _mapper.Map<IQueryable<Competition>, IEnumerable<CompetitionDto>>(competitions);
+                .Include(c => c.CreatedBy);
+            var result = _mapper.Map<IQueryable<Competition>, IEnumerable<CompetitionDto>>(competitions).ToList();
+            foreach (var competition in result)
+            {
+                competition.Participating = IsAlreadyParticipate(competition.Id);
+            }
+
+            return result;
         }
 
-        public bool IsAlreadyParticipate()
+        public bool IsAlreadyParticipate(int competitionId)
         {
             var user = _authService.GetCurrentUserAsync().Result;
-            var count = _context.CompetitionApplications.Count(x => x.ApplicantId == user.Id);
+            var count = _context.CompetitionApplications.Count(x => x.ApplicantId == user.Id
+                                                                            && x.CompetitionId == competitionId);
             return count > 0;
         }
 
