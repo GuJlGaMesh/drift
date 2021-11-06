@@ -1,53 +1,44 @@
-@model IEnumerable<drift.Models.Dto.CompetitionApplicationDto>
+﻿@model IEnumerable<drift.Models.Dto.CompetitionApplicationDto>
 
-@{
-    ViewData["Title"] = "Index";
-}
+<h1>Ожидающие заявки</h1>
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
-    <thead>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.ParticipantNumber)
-        </th>
-        <th>
-                @Html.DisplayNameFor(model => model.IdentityUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Competition)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ApprovedByMedics)
-            </th>
-        <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParticipantNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdentityUser.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Competition.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApprovedByMedics)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ApplicationId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ApplicationId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ApplicationId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
+	<thead>
+	<tr>
+		<th>
+			@Html.DisplayNameFor(model => model.ParticipantNumber)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.IdentityUser)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.Competition)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.ApprovedByMedics)
+		</th>
+		<th></th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var item in Model) {
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.ParticipantNumber)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.IdentityUser.Email)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.Competition.Name)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.ApprovedByMedics)
+			</td>
+			<td>
+				<a asp-action="Approve" asp-route-id="@item.ApplicationId">Подтвердить</a>
+			</td>
+		</tr>
+	}
+	</tbody>
 </table>

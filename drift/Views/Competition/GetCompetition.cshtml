@@ -4,8 +4,8 @@
 
 
 @{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
+	ViewBag.Title = "title";
+	Layout = "_Layout";
 }
 
 <h2>@Model.Name</h2>
@@ -14,26 +14,74 @@
 
 @if (@Model.CreatedById.Equals(httpContextAccessor.HttpContext.User.Identity.Name))
 {
-    @foreach (var application in @Model.Applications)
-    {
-        <li class="list-group-item list-group-item-action flex-column align-items-start">
-            <p class="mb-1">@application.ParticipantName</p>
-            <p class="mb-1">@application.ParticipantNumber</p>
-            <p class="mb-1">@application.Paid</p>
-            <p class="mb-1">@application.ApprovedByTech</p>
-            <p class="mb-1">@application.ApprovedByMedics</p>
-            <p class="mb-1">@application.ApprovedByOrganizer</p>
-        </li>
-    }
-    @if ((bool) !@Model.Finished)
-    {
-        @Html.ActionLink("Start competition", "GenerateResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1"})
-    }
-    else
-    {
-        @Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1"})
-       <br>
-        @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1"})
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => @Model.Applications.First().ParticipantName)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => @Model.Applications.First().ParticipantNumber)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => @Model.Applications.First().Paid)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByTech)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByMedics)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByOrganizer)
+			</th>
+			<th>Действие</th>
+		</tr>
+	</thead>
+	@foreach (var application in @Model.Applications)
+	{
 
-    }
+		<tbody>
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => application.ParticipantName)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => application.ParticipantNumber)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => application.Paid)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => application.ApprovedByTech)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => application.ApprovedByMedics)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => application.ApprovedByOrganizer)
+				</td>
+				<td>
+					@if (!application.ApprovedByOrganizer)
+					{
+						<button>
+							<a asp-action="Approve" asp-route-id="@application.ApplicationId">Подтвердить участие</a>
+						</button>
+					}
+				</td>
+			</tr>
+		</tbody>
+	}
+</table>
+	@if ((bool)!@Model.Finished)
+	{
+		@Html.ActionLink("Start competition", "GenerateResults", "CompetitionResult", new { competitionId = @Model.Id }, new { @class = "mb-1" })
+	}
+	else
+	{
+		@Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new { competitionId = @Model.Id }, new { @class = "mb-1" })
+		<br>
+		@Html.ActionLink("Очки", "GetScores", "CompetitionResult", new { competitionId = @Model.Id }, new { @class = "mb-1" })
+
+	}
 }

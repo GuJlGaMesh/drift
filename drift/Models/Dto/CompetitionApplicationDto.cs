@@ -27,9 +27,11 @@ namespace drift.Models.Dto
 		public string ParticipantName => IdentityUser?.UserName;
 		public bool PaidError { get; set; }
 		public bool ParticipantNumberError { get; set; }
-		[DisplayName("Подтверждение")]
+		[DisplayName("Медики")]
 		public bool ApprovedByMedics { get; set; }
+		[DisplayName("Техники")]
 		public bool ApprovedByTech { get; set; }
+		[DisplayName("Организаторы")]
 		public bool ApprovedByOrganizer { get; set; }
 
 		public override string ToString()

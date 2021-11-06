@@ -10,7 +10,7 @@ namespace drift.Service
 {
     public class CompetitionScoreService
     {
-        private ApplicationDbContext db;
+        private ApplicationDbContext _db;
         private IMapper _mapper;
         private UserService _userService;
 
@@ -18,15 +18,15 @@ namespace drift.Service
         {
             _userService = userService;
             _mapper = mapper;
-            this.db = db;
+            this._db = db;
         }
 
-        public List<CompetitionScoreDto> getCompetitionScore(int competitionId)
+        public List<CompetitionScoreDto> GetCompetitionScore(int competitionId)
         {
-            using (db)
+            using (_db)
             {
-                var score = from cs in db.CompetitionScores
-                    join c in db.Competitions on cs.CompetitionId equals c.Id
+                var score = from cs in _db.CompetitionScores
+                    join c in _db.Competitions on cs.CompetitionId equals c.Id
                     where cs.CompetitionId == competitionId
                     select new CompetitionScoreDto()
                     {
@@ -36,25 +36,25 @@ namespace drift.Service
                         TrackScore = cs.TrackScore,
                         StyleScore = cs.StyleScore,
                         Attempt = cs.Attempt,
-                        Participant = _userService.findById(cs.ParticipantId)
+                        Participant = _userService.FindById(cs.ParticipantId)
                     };
                 return score.Select(dto => dto).ToList();
             }
         }
 
 
-        public CompetitionScoreDto storeScore(CompetitionScoreDto dto)
+        public CompetitionScoreDto StoreScore(CompetitionScoreDto dto)
         {
-            using (db)
+            using (_db)
             {
-                var result = db.CompetitionScores.Add(new CompetitionScore()
+                var result = _db.CompetitionScores.Add(new CompetitionScore()
                 {
                     ParticipantId = dto.Participant.Id,
                     CompetitionId = dto.Competition.Id,
                     AngleScore = dto.AngleScore,
                     Attempt = dto.Attempt,
                 });
-                db.SaveChanges();
+                _db.SaveChanges();
                 dto.Id = result.Entity.Id;
             }
 

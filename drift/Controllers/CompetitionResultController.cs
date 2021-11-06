@@ -19,7 +19,7 @@ namespace drift.Controllers
         [HttpGet]
         public IActionResult GetResults(int competitionId)
         {
-            var bracket = _resultService.getResultsBracket(competitionId);
+            var bracket = _resultService.GetResultsBracket(competitionId);
             return View(bracket);
         }
 
@@ -33,7 +33,7 @@ namespace drift.Controllers
         [HttpGet]
         public IActionResult GenerateResults(int competitionId)
         {
-            _resultService.generateResults(competitionId, HttpContext.User.Identity.Name);
+            _resultService.GenerateResults(competitionId, HttpContext.User.Identity.Name);
             return RedirectToAction("GetResults", new {competitionId = competitionId});
         }
     }
