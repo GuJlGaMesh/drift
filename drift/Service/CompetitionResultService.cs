@@ -42,7 +42,8 @@ namespace drift.Service
         {
             var result = from cs in db.CompetitionScores
                 join c in db.Competitions on cs.CompetitionId equals c.Id
-                where cs.CompetitionId == competitionId
+                orderby cs.ParticipantName
+                where cs.CompetitionId == competitionId 
                 select new CompetitionScoreDto()
                 {
                     Id = cs.Id,
