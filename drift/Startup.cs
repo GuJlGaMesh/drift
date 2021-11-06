@@ -34,6 +34,7 @@ namespace drift
 
             services.AddScoped<UserService, UserService>();
             services.AddScoped<AuthService, AuthService>();
+            services.AddScoped<ApprovingService, ApprovingService>();
             services.AddScoped<CompetitionService, CompetitionService>();
             var mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
 

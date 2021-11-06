@@ -9,9 +9,11 @@ namespace drift.Utils
         {
             CreateMap<Competition, CompetitionDto>()
                 .ForMember("CreatorUserName",
-                    comp => comp.MapFrom(c => c.CreatedBy.UserName));
+                    comp => comp.MapFrom(c => c.CreatedBy.UserName)).ReverseMap();
             CreateMap<Car, CarDto>().ReverseMap();
-            CreateMap<CompetitionApplication, CompetitionApplicationDto>().ReverseMap();
+            CreateMap<CompetitionApplication, CompetitionApplicationDto>()
+                .ForMember(x => x.ApplicationId, y => y.MapFrom(z => z.Id))
+                .ForMember(x => x.ParticipantName, y => y.Ignore()).ReverseMap();
         }
     }
 }
