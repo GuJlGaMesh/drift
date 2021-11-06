@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.CodeAnalysis;
 
 namespace drift.Models.Dto
 {
@@ -17,6 +18,8 @@ namespace drift.Models.Dto
         public bool Finished { get; set; }
         public string Description { get; set; }
         public double Fee { get; set; }
+
+        public bool Participating { get; set; }
 
         public List<CompetitionApplicationDto> Applications { get; set; }
 

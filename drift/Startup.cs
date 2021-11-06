@@ -38,7 +38,7 @@ namespace drift
             services.AddScoped<CompetitionService, CompetitionService>();
             services.AddScoped<CompetitionResultService, CompetitionResultService>();
             services.AddScoped<CompetitionScoreService, CompetitionScoreService>();
-            
+
             var mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
 
             IMapper mapper = mapperConfig.CreateMapper();
