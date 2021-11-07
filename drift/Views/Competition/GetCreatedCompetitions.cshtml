@@ -1,0 +1,74 @@
+@using drift.Models.Dto
+@model dynamic
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var competitions = Model as IEnumerable<CompetitionDto>;
+}
+<h1 class="text-center">Созданные соревнования
+<a class="nav-link text-dark" asp-controller="Competition" asp-action="CreateCompetition">
+  <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 32 32">
+    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+  </svg>
+</a>
+
+    </h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+          Начало
+        </th>
+        <th>
+         Название
+        </th>
+        <th>
+        Регистрация открыта
+        </th>
+        <th>
+        Описание
+        </th>
+        <th>
+        Стоимость
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in competitions)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+               <a asp-controller="Competition" asp-action="GetCompetition" asp-route-id="@item.Id">
+                @Html.DisplayFor(modelItem => item.Name)
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegistrationOpen)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fee)
+            </td>
+            <td>
+                @if (item.Finished)
+                {
+                    <button class="btn btn-success">
+                        @Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new {competitionId = item.Id}, new {@class = "mb-1 text-white"})
+                    </button>
+                    <button class="btn btn-success">
+                        @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = item.Id}, new {@class = "mb-1 text-white"})
+                    </button>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

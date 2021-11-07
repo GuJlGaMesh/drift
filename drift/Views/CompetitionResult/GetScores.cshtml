@@ -7,12 +7,12 @@
 <table class="table">
     <thead>
     <tr class="bg-primary">
-        <th scope="col">Paricipant</th>
-        <th scope="col">Angle Score</th>
-        <th scope="col">Track Score</th>
-        <th scope="col">Style Score</th>
-        <th scope="col">Attempt</th>
-        <th scope="col">Total</th>
+        <th scope="col">Участник</th>
+        <th scope="col">Очки за угол</th>
+        <th scope="col">Очки за трассу</th>
+        <th scope="col">Очки за стиль</th>
+        <th scope="col">Попытка</th>
+        <th scope="col">Общие очки</th>
     </tr>
     </thead>
     <tbody>
@@ -36,7 +36,7 @@
         @if (i == @Model.Count - 1 || @Model[i].ParticipantName!= @Model[i + 1].ParticipantName)
         {
             <tr class="bg-success">
-                <th scope="col">Best</th>
+                <th scope="col">Лучшие результаты</th>
                 <th scope="col">@Model[i].BestAngle</th>
                 <th scope="col">@Model[i].BestTrack</th>
                 <th scope="col">@Model[i].BestStyle</th>

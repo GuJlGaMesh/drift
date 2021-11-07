@@ -1,4 +1,10 @@
-﻿using drift.Models.Dto;
+using drift.Models.Dto;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using drift.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -57,5 +63,13 @@ namespace drift.Controllers
 			_approvingService.UpdateOrganizerApplicationStatus(application);
 			return RedirectToAction(nameof(GetCompetition), new {Id = application.CompetitionId});
 		}
-	}
+		
+		[HttpGet]
+        public IActionResult GetCreatedCompetitions()
+        {
+            var userId = HttpContext.User.Identity.Name;
+            var competitions = _competitionService.FindCreatedCompetitions(userId);
+            return View(competitions);
+        }
+    }
 }

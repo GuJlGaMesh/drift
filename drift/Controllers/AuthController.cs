@@ -53,7 +53,7 @@ namespace drift.Controllers
                 if (authModel.Role == UserRoleEnum.USER.ToString())
                     return RedirectToAction("Index", "User");
                 if (authModel.Role == UserRoleEnum.ORGANIZER.ToString())
-                    return RedirectToAction("CreateCompetition", "Competition");
+                    return RedirectToAction("GetCreatedCompetitions", "Competition");
                 if (authModel.Role == UserRoleEnum.TECH_COMMISSION.ToString())
                     return RedirectToAction("Index", "Tech");
                 if (authModel.Role == UserRoleEnum.MEDICAL_COMMISSION.ToString())

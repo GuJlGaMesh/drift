@@ -5,12 +5,6 @@
     @if (httpContextAccessor.HttpContext.User.Identity is {IsAuthenticated: true })
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Competition" asp-action="CreateCompetition">Create competition </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Competition" asp-action="GetCompetitions">Get all </a>
-        </li>
-        <li class="nav-item">
             <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
         </li>
     }

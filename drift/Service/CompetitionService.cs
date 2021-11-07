@@ -41,10 +41,14 @@ namespace drift.Service
 
         public List<CompetitionDto> FindCompetitions()
         {
-            var competitions = _db.Competitions.Select(c => c).ToList();
-            Console.WriteLine(string.Join("\t", competitions));
+            var competitions = db.Competitions.Select(c => c).ToList();
             return _mapper.Map<IEnumerable<Competition>, List<CompetitionDto>>(competitions);
         }
-        
+
+        public List<CompetitionDto> FindCreatedCompetitions(string userId)
+        {
+            var competitions = db.Competitions.Where(c => c.CreatedById == userId).Select(c => c).ToList();
+            return _mapper.Map<IEnumerable<Competition>, List<CompetitionDto>>(competitions);
+        }
     }
 }
