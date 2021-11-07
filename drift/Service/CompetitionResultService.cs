@@ -75,7 +75,7 @@ namespace drift.Service
                     FourthPhaseScore = cr.FourthPhaseScore,
                     CarNumber = cr.CarNumber,
                     TotalScore = cr.TotalScore,
-                    User = _userService.findById(cr.ParticipantId),
+                    User = _userService.FindById(cr.ParticipantId),
                     ParticipantName = cr.ParticipantName,
                 };
             return result;
@@ -101,7 +101,7 @@ namespace drift.Service
             }
         }
 
-        public void generateResults(int competitionId, string userId)
+        public void GenerateResults(int competitionId, string userId)
         {
             using (db)
             {
@@ -111,7 +111,7 @@ namespace drift.Service
                     return;
                 }
 
-                var applications = _userService.getApprovedApplicationsByCompetition(competitionId);
+                var applications = _userService.GetApprovedApplicationsByCompetition(competitionId);
                 var fakeCarName = "Participant #";
                 var participantName = "Car #";
                 for (int i = 0; i < applications.Count; i++)

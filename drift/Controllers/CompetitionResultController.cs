@@ -19,7 +19,7 @@ namespace drift.Controllers
         [HttpGet]
         public IActionResult GetResults(int competitionId)
         {
-            var bracket = _resultService.GetResultsBracket(competitionId);
+            var bracket = _resultService.getResultsBracket(competitionId);
             return View(bracket);
         }
 
