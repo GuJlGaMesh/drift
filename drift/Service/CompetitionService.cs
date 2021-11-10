@@ -24,11 +24,9 @@ namespace drift.Service
         public CompetitionDto CreateCompetition(CompetitionDto dto, string creatorId)
         {
             var entity = _mapper.Map<Competition>(dto);
-            Console.WriteLine(creatorId);
-            var users = _db.Users.Select(c => c).ToList();
-            Console.WriteLine(string.Join("\t", users));
             var creator = _db.Users.FirstOrDefault(u => u.Id == creatorId);
             entity.CreatedBy = creator;
+            entity.RegistrationOpen = true;
             _db.Competitions.Add(entity);
             _db.SaveChanges();
             return _mapper.Map<Competition, CompetitionDto>(entity);

@@ -69,6 +69,7 @@ namespace drift.Controllers
 			var competition = _userService.GetCompetition(id);
 			var user = await _authService.GetCurrentUserAsync();
 			var car = _userService.GetCar(user);
+			if (car == null) return RedirectToAction("CreateCar");
 			if (competition == null) return NotFound();
 			var competitionApplication = new CompetitionApplicationDto()
 			{
@@ -83,7 +84,7 @@ namespace drift.Controllers
 		public async Task<IActionResult> Participate(CompetitionApplicationDto dto)
 		{
 			if (dto == null) return NotFound();
-			var numAvailable = _userService.CheckAvailabilityOfParticipantNumber(dto.ParticipantNumber);
+			var numAvailable = _userService.CheckAvailabilityOfParticipantNumber(dto);
 			if (!numAvailable)
 				dto.ParticipantNumberError = true;
 			if (!dto.Paid)
@@ -92,6 +93,11 @@ namespace drift.Controllers
 				return View(dto);
 
 			var user = await _authService.GetCurrentUserAsync();
+
+			var car = _userService.GetCar(user);
+
+			if (car is null) return RedirectToAction("CreateCar");
+
 			dto.ApplicantId = user.Id;
 
 			_userService.SaveNewCompetitionApplication(dto);

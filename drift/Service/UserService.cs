@@ -94,9 +94,9 @@ namespace drift.Service
 			return _mapper.Map<CompetitionDto>(competition);
 		}
 
-		public bool CheckAvailabilityOfParticipantNumber(int dtoParticipantNumber)
+		public bool CheckAvailabilityOfParticipantNumber(CompetitionApplicationDto dto)
 		{
-			if (_context.CompetitionApplications.Count(x => x.ParticipantNumber == dtoParticipantNumber) > 0)
+			if (_context.CompetitionApplications.Count(x => x.ParticipantNumber == dto.ParticipantNumber && x.CompetitionId == dto.CompetitionId) > 0)
 				return false;
 			return true;
 		}
@@ -116,8 +116,7 @@ namespace drift.Service
 		{
 			var applications = from ca in _context.CompetitionApplications
 				join c in _context.Cars on ca.CarId equals c.Id
-				where ca.ApprovedByMedics == true && ca.ApprovedByOrganizer == true && ca.ApprovedByTech == true
-				      && ca.CompetitionId == competitionId
+				where ca.CompetitionId == competitionId
 				select new CompetitionApplicationDto()
 				{
 					ApplicantId = ca.ApplicantId,

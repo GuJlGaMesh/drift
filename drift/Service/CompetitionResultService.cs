@@ -149,6 +149,7 @@ namespace drift.Service
                 }
 
                 competition.Finished = true;
+                competition.RegistrationOpen = false;
                 db.Competitions.Update(competition);
                 db.SaveChanges();
                 generateScores(competition);

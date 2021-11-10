@@ -14,8 +14,8 @@ namespace drift.Models.Dto
 		public Car Car { get; set; }
 		[DisplayName("Номер для участия")]
 		[Required] public int ParticipantNumber { get; set; }
-		[DisplayName("Оплата")]
-		public bool Paid { get; set; }
+
+		[DisplayName("Оплата")] public bool Paid => true;
 		public int CompetitionId { get; set; }
 		[DisplayName("Соревнование")]
 		public Competition Competition { get; set; }
