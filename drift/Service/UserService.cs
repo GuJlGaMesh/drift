@@ -114,12 +114,25 @@ namespace drift.Service
 
 		public List<CompetitionApplicationDto> GetApprovedApplicationsByCompetition(int competitionId)
 		{
-			var applications = _context.CompetitionApplications
-				.Include(c => c.Car)
-				.Where(c => c.CompetitionId == competitionId).ToList();
-							  
-			var result = _mapper.Map<List<CompetitionApplication>,List<CompetitionApplicationDto>>(applications);
-			return result;
+			var applications = from ca in _context.CompetitionApplications
+				join c in _context.Cars on ca.CarId equals c.Id
+				where ca.ApprovedByMedics == true && ca.ApprovedByOrganizer == true && ca.ApprovedByTech == true
+				      && ca.CompetitionId == competitionId
+				select new CompetitionApplicationDto()
+				{
+					ApplicantId = ca.ApplicantId,
+					ApplicationId = ca.Id,
+					ApprovedByMedics = ca.ApprovedByMedics,
+					ApprovedByOrganizer = ca.ApprovedByOrganizer,
+					ApprovedByTech = ca.ApprovedByTech,
+					Car = ca.Car,
+					CarId = ca.CarId,
+					CarModelAndName = ca.Car.Model + " " + ca.Car.Name,
+					Competition = ca.Competition,
+					CompetitionId = ca.CompetitionId,
+					ParticipantNumber = ca.ParticipantNumber
+				};
+			return applications.ToList();
 		}
 
 		public bool IsApplicantApproved()

@@ -10,7 +10,6 @@ namespace drift.Models.Dto
         public List<CompetitionResultDto> SecondStageResults { get; set; }
         public List<CompetitionResultDto> ThirdStageResults { get; set; }
         public List<CompetitionResultDto> FourthStageResults { get; set; }
-        
         public List<CompetitionResultDto> OverallResults { get; set; }
 
 

@@ -24,7 +24,7 @@ namespace drift.Data.Migrations
                 column: "CompetitionId",
                 principalTable: "Competitions",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.NoAction);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
