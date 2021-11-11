@@ -1,4 +1,5 @@
 ﻿using System;
+using drift.Models.Dto;
 using drift.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -22,6 +23,17 @@ namespace drift.Controllers
             var bracket = _resultService.getResultsBracket(competitionId);
             return View(bracket);
         }
+
+        [HttpPost]
+        public IActionResult SetScores(CompetitionScoreSetRequest request)
+        {
+              _scoreService.SetCompetitionScore(request.Scores,request.competitionId);
+            return RedirectToAction("GetScores", new
+            {
+                competitionId = request.competitionId
+            });
+        }
+
 
         [HttpGet]
         public IActionResult GetScores(int competitionId)

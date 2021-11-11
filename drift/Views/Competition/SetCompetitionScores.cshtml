@@ -1,0 +1,82 @@
+﻿@using drift.Models.Dto
+@using drift.Data.Entity
+@model CompetitionScoreUnsetDto
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+
+    var totalCount = 0;
+    var scores = new List<CompetitionScoreDto>(Model.Attempts * Model.Participants.Capacity);
+    var request = new CompetitionScoreSetRequest
+    {
+        competitionId = @Model.CompetitionId,
+        Scores = scores
+    };
+
+}
+<form asp-controller="CompetitionResult" asp-action="SetScores">
+    <table class="table">
+        <thead>
+        <tr class="bg-primary">
+            <th scope="col">Участник</th>
+            <th scope="col">Очки за угол</th>
+            <th scope="col">Очки за трассу</th>
+            <th scope="col">Очки за стиль</th>
+            <th scope="col">Попытка</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var participant in @Model.Participants)
+        {
+            @Html.TextBoxFor(s => request.competitionId, new {value = Model.CompetitionId, hidden = true})
+            for (var i = 0; i < @Model.Attempts; i++)
+            {
+                <tr>
+                    @{
+                        var score = new CompetitionScoreDto()
+                        {
+                            Attempt = i + 1,
+                            Participant = participant.Participant,
+                            ParticipantName = participant.ParticipantName
+                        };
+                        request.Scores.Add(score);
+                    }
+
+                    <th scope="col">
+                        Участник номер <b>@participant.ParticipantNumber</b>: @participant.ParticipantName
+                        <br>
+                        Машина:@participant.Car.Model @participant.Car.Name
+                    </th>
+                    @Html.TextBoxFor(s => request.Scores[totalCount].Participant.Id, new {value = participant.Participant.Id, hidden = true})
+                    @Html.TextBoxFor(s => request.Scores[totalCount].ParticipantName, new {value = participant.ParticipantName, hidden = true})
+
+                    <th scope="col">
+                        @Html.TextBoxFor(s => request.Scores[totalCount].AngleScore)
+                    </th>
+                    <th scope="col">
+                        @Html.TextBoxFor(s => request.Scores[totalCount].TrackScore)
+                    </th>
+                    <th scope="col">
+                        @Html.TextBoxFor(s => request.Scores[totalCount].StyleScore)
+                    </th>
+                    <th scope="col">
+                        @(i + 1)
+                    </th>
+                    @{
+                        ++totalCount;
+                    }
+                </tr>
+            }
+            <tr>
+                <th scope="col">---------------------------</th>
+                <th scope="col">---------------------------</th>
+                <th scope="col">---------------------------</th>
+                <th scope="col">---------------------------</th>
+                <th scope="col">---------------------------</th>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <input type="submit" value="Установить очки">
+</form>

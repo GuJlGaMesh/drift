@@ -22,9 +22,9 @@ namespace drift.Models.Dto
 		public string CarModelAndName { get; set; }
 		//owner id
 		[DisplayName("Данные участника")]
-		public IdentityUser IdentityUser { get; set; }
+		public UserDto Participant { get; set; }
 
-		public string ParticipantName => IdentityUser?.UserName;
+		public string ParticipantName => Participant?.UserName;
 		public bool PaidError { get; set; }
 		public bool ParticipantNumberError { get; set; }
 		[DisplayName("Медики")]
@@ -36,7 +36,7 @@ namespace drift.Models.Dto
 
 		public override string ToString()
 		{
-			return $"{nameof(ApplicationId)}: {ApplicationId}, {nameof(ApplicantId)}: {ApplicantId}, {nameof(CarId)}: {CarId}, {nameof(Car)}: {Car}, {nameof(ParticipantNumber)}: {ParticipantNumber}, {nameof(Paid)}: {Paid}, {nameof(CompetitionId)}: {CompetitionId}, {nameof(Competition)}: {Competition}, {nameof(CarModelAndName)}: {CarModelAndName}, {nameof(IdentityUser)}: {IdentityUser}, {nameof(ParticipantName)}: {ParticipantName}, {nameof(PaidError)}: {PaidError}, {nameof(ParticipantNumberError)}: {ParticipantNumberError}, {nameof(ApprovedByMedics)}: {ApprovedByMedics}, {nameof(ApprovedByTech)}: {ApprovedByTech}, {nameof(ApprovedByOrganizer)}: {ApprovedByOrganizer}";
+			return $"{nameof(ApplicationId)}: {ApplicationId}, {nameof(ApplicantId)}: {ApplicantId}, {nameof(CarId)}: {CarId}, {nameof(Car)}: {Car}, {nameof(ParticipantNumber)}: {ParticipantNumber}, {nameof(Paid)}: {Paid}, {nameof(CompetitionId)}: {CompetitionId}, {nameof(Competition)}: {Competition}, {nameof(CarModelAndName)}: {CarModelAndName}, {nameof(Participant)}: {Participant}, {nameof(ParticipantName)}: {ParticipantName}, {nameof(PaidError)}: {PaidError}, {nameof(ParticipantNumberError)}: {ParticipantNumberError}, {nameof(ApprovedByMedics)}: {ApprovedByMedics}, {nameof(ApprovedByTech)}: {ApprovedByTech}, {nameof(ApprovedByOrganizer)}: {ApprovedByOrganizer}";
 		}
 	}
 }

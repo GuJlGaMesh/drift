@@ -9,7 +9,7 @@
 				@Html.DisplayNameFor(model => model.ParticipantNumber)
 			</th>
 			<th>
-				@Html.DisplayNameFor(model => model.IdentityUser)
+				@Html.DisplayNameFor(model => model.Participant)
 			</th>
 			<th>
 				@Html.DisplayNameFor(model => model.Competition)
@@ -28,7 +28,7 @@
 					@Html.DisplayFor(modelItem => item.ParticipantNumber)
 				</td>
 				<td>
-					@Html.DisplayFor(modelItem => item.IdentityUser.Email)
+					@Html.DisplayFor(modelItem => item.Participant.Email)
 				</td>
 				<td>
 					@Html.DisplayFor(modelItem => item.Competition.Name)

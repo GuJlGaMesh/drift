@@ -21,6 +21,24 @@ namespace drift.Service
             this._db = db;
         }
 
+        public void SetCompetitionScore(List<CompetitionScoreDto> scoreDtos, int competitionId)
+        {
+            var competition = _userService.GetCompetition(competitionId);
+            var scores = scoreDtos.Select(score =>
+                new CompetitionScore()
+                {
+                    CompetitionId = competition.Id,
+                    AngleScore = score.AngleScore,
+                    TrackScore = score.TrackScore,
+                    StyleScore = score.StyleScore,
+                    Attempt = score.Attempt,
+                    ParticipantId = score.Participant.Id,
+                    ParticipantName = score.ParticipantName
+                }).ToList();
+            _db.CompetitionScores.AddRange(scores);
+            _db.SaveChanges();
+        }
+
         public List<CompetitionScoreDto> GetCompetitionScore(int competitionId)
         {
             using (_db)

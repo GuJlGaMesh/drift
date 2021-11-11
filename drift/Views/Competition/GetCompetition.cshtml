@@ -6,26 +6,35 @@
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
+    var attempts = 1;
 }
 
 <h2>@Model.Name</h2>
 <p>@Model.Description</p>
 <p>@Model.StartDate</p>
-    @if (!@Model.Finished)
-    {
-        <button class="btn btn-success">
-            @Html.ActionLink("Начать соревнование", "GenerateResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
-        </button>
-    }
-    else
-    {
-        <button class="btn btn-success">
-            @Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
-        </button>
-        <button class="btn btn-success">
-            @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
-        </button>
-    }
+@if (!@Model.Finished)
+{
+    <form asp-controller="Competition" asp-action="SetCompetitionScores" method="get">
+        <input type="hidden" value="@Model.Id" name="competitionId" id="competitionId">
+        <label for="attempts" class="control-label">Введите количество попыток</label>
+        <select name="attempts" id="attempts">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="2">3</option>
+        </select>
+        <br>
+        <input type="submit" value="Начать соревнование" class="btn btn-success"/>
+    </form>
+}
+else
+{
+    <button class="btn btn-success">
+        @Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
+    </button>
+    <button class="btn btn-success">
+        @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
+    </button>
+}
 @if (@Model.CreatedById.Equals(httpContextAccessor.HttpContext.User.Identity.Name))
 {
     <table class="table">
@@ -86,5 +95,4 @@
             </tbody>
         }
     </table>
-
 }
