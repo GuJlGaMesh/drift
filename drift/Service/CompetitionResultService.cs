@@ -43,7 +43,7 @@ namespace drift.Service
             var result = from cs in db.CompetitionScores
                 join c in db.Competitions on cs.CompetitionId equals c.Id
                 orderby cs.ParticipantName
-                where cs.CompetitionId == competitionId 
+                where cs.CompetitionId == competitionId
                 select new CompetitionScoreDto()
                 {
                     Id = cs.Id,
@@ -105,6 +105,7 @@ namespace drift.Service
         {
             using (db)
             {
+                Random random=new Random((int) (DateTime.Now.Ticks));
                 var competition = getCompetition(competitionId, userId);
                 if (competition.Finished)
                 {
@@ -120,13 +121,13 @@ namespace drift.Service
                     {
                         CarNumber = applications[i].ParticipantNumber,
                         CompetitionId = competition.Id,
-                        FirstPhaseScore = _random.Next(1, 100),
-                        FourthPhaseScore = _random.Next(1, 100),
+                        FirstPhaseScore = random.Next(1, 100),
+                        FourthPhaseScore = random.Next(1, 100),
                         ParticipantCar = applications[i].CarModelAndName,
                         ParticipantId = applications[i].ApplicantId,
                         ParticipantName = applications[i].CarModelAndName,
-                        SecondPhaseScore = _random.Next(1, 100),
-                        ThirdPhaseScore = _random.Next(1, 100),
+                        SecondPhaseScore = random.Next(1, 100),
+                        ThirdPhaseScore = random.Next(1, 100),
                     };
                     db.CompetitionResults.Add(result);
                 }
@@ -137,16 +138,27 @@ namespace drift.Service
                     {
                         CarNumber = i,
                         CompetitionId = competition.Id,
-                        FirstPhaseScore = _random.Next(1, 100),
-                        FourthPhaseScore = _random.Next(1, 100),
+                        FirstPhaseScore = random.Next(1, 100),
+                        FourthPhaseScore = random.Next(1, 100),
                         ParticipantCar = fakeCarName + i,
                         ParticipantId = userId,
                         ParticipantName = participantName + i,
-                        SecondPhaseScore = _random.Next(1, 100),
-                        ThirdPhaseScore = _random.Next(1, 100),
+                        SecondPhaseScore = random.Next(1, 100),
+                        ThirdPhaseScore = random.Next(1, 100),
                     };
                     db.CompetitionResults.Add(result);
                 }
+
+                var presentResults = db.CompetitionResults.Where(cr => cr.CompetitionId == competitionId)
+                    .Select(cr =>
+                        new
+                        {
+                            firstPhase = cr.FirstPhaseScore,
+                            secondPhase = cr.SecondPhaseScore,
+                            thirdPhase = cr.ThirdPhaseScore,
+                            fourthPhase = cr.FourthPhaseScore,
+                            Id = cr.Id
+                        }).ToList();
 
                 competition.Finished = true;
                 competition.RegistrationOpen = false;
