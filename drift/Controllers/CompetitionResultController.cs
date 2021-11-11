@@ -10,11 +10,14 @@ namespace drift.Controllers
     {
         private CompetitionResultService _resultService;
         private CompetitionScoreService _scoreService;
+        private UserService _userService;
 
-        public CompetitionResultController(CompetitionScoreService scoreService, CompetitionResultService resultService)
+        public CompetitionResultController(CompetitionScoreService scoreService, CompetitionResultService resultService,
+            UserService userService)
         {
             _scoreService = scoreService;
             _resultService = resultService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -27,7 +30,7 @@ namespace drift.Controllers
         [HttpPost]
         public IActionResult SetScores(CompetitionScoreSetRequest request)
         {
-              _scoreService.SetCompetitionScore(request.Scores,request.competitionId);
+            _scoreService.SetCompetitionScore(request.Scores, request.competitionId);
             return RedirectToAction("GetScores", new
             {
                 competitionId = request.competitionId
@@ -38,12 +41,14 @@ namespace drift.Controllers
         [HttpGet]
         public IActionResult GetScores(int competitionId)
         {
+            var competition = _userService.GetCompetition(competitionId);
             var score = _resultService.GetScore(competitionId);
-            return View(score);
+            return View(new CompetitionScoreResponse()
+                {Scores = score, competitionId = competition.Id, createdById = competition.CreatedById});
         }
 
         [HttpGet]
-        public IActionResult GenerateResults(int competitionId)
+        public IActionResult StartMainPhase(int competitionId)
         {
             _resultService.GenerateResults(competitionId, HttpContext.User.Identity.Name);
             return RedirectToAction("GetResults", new {competitionId = competitionId});

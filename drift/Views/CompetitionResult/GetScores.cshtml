@@ -1,4 +1,6 @@
-﻿@model System.Collections.Generic.List<drift.Data.Entity.CompetitionScoreDto>
+﻿@using Microsoft.AspNetCore.Http
+@model drift.Models.Dto.CompetitionScoreResponse
+@inject IHttpContextAccessor httpContextAccessor
 
 @{
     ViewBag.Title = "title";
@@ -16,34 +18,42 @@
     </tr>
     </thead>
     <tbody>
-    @for (var i = 0; i < Model.Count; i++)
+    @for (var i = 0; i < Model.Scores.Count; i++)
     {
         <tr class="bg-info">
-            @if (i == 0 || @Model[i].ParticipantName != @Model[i - 1].ParticipantName)
+            @if (i == 0 || @Model.Scores[i].ParticipantName != @Model.Scores[i - 1].ParticipantName)
             {
-                <th scope="col">@Model[i].ParticipantName</th>
+                <th scope="col">@Model.Scores[i].ParticipantName</th>
             }
             else
             {
                 <th></th>
             }
-            <th scope="col">@Model[i].AngleScore</th>
-            <th scope="col">@Model[i].TrackScore</th>
-            <th scope="col">@Model[i].StyleScore</th>
-            <th scope="col">@Model[i].Attempt</th>
-            <th scope="col">@Model[i].Total</th>
+            <th scope="col">@Model.Scores[i].AngleScore</th>
+            <th scope="col">@Model.Scores[i].TrackScore</th>
+            <th scope="col">@Model.Scores[i].StyleScore</th>
+            <th scope="col">@Model.Scores[i].Attempt</th>
+            <th scope="col">@Model.Scores[i].Total</th>
         </tr>
-        @if (i == @Model.Count - 1 || @Model[i].ParticipantName!= @Model[i + 1].ParticipantName)
+        @if (i == @Model.Scores.Count - 1 || @Model.Scores[i].ParticipantName != @Model.Scores[i + 1].ParticipantName)
         {
             <tr class="bg-success">
                 <th scope="col">Лучшие результаты</th>
-                <th scope="col">@Model[i].BestAngle</th>
-                <th scope="col">@Model[i].BestTrack</th>
-                <th scope="col">@Model[i].BestStyle</th>
+                <th scope="col">@Model.Scores[i].BestAngle</th>
+                <th scope="col">@Model.Scores[i].BestTrack</th>
+                <th scope="col">@Model.Scores[i].BestStyle</th>
                 <th scope="col"></th>
-               <th scope="col"></th>
+                <th scope="col"></th>
             </tr>
         }
     }
     </tbody>
 </table>
+@if (Model.createdById == httpContextAccessor.HttpContext.User.Identity.Name)
+{
+    <a class="nav-link text-dark" asp-controller="CompetitionResult" asp-action="StartMainPhase" asp-route-competitionId="@Model.competitionId">
+        <button class="btn btn-success" type="submit">
+            Начать основной этап
+        </button>
+    </a>
+}

@@ -24,6 +24,10 @@ namespace drift.Service
         public void SetCompetitionScore(List<CompetitionScoreDto> scoreDtos, int competitionId)
         {
             var competition = _userService.GetCompetition(competitionId);
+            var scoresToRemove = _db.CompetitionScores.Where(c => c.CompetitionId == competitionId)
+                .Select(c => c);
+            _db.CompetitionScores.RemoveRange(scoresToRemove);
+            _db.CompetitionScores.RemoveRange();
             var scores = scoreDtos.Select(score =>
                 new CompetitionScore()
                 {
@@ -33,7 +37,8 @@ namespace drift.Service
                     StyleScore = score.StyleScore,
                     Attempt = score.Attempt,
                     ParticipantId = score.Participant.Id,
-                    ParticipantName = score.ParticipantName
+                    ParticipantName = score.ParticipantName,
+                    Total = score.AngleScore + score.TrackScore + score.StyleScore
                 }).ToList();
             _db.CompetitionScores.AddRange(scores);
             _db.SaveChanges();

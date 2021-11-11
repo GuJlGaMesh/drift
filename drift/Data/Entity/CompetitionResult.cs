@@ -32,5 +32,7 @@ namespace drift.Data.Entity
 
         public int FourthPhaseScore { get; set; }
         public int TotalScore { get; set; }
+
+        public int ParticipantNumber { get; set; }
     }
 }

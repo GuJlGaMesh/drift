@@ -16,7 +16,7 @@ namespace drift.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.10")
+                .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -353,6 +353,9 @@ namespace drift.Data.Migrations
                     b.Property<string>("ParticipantName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ParticipantNumber")
+                        .HasColumnType("int");
+
                     b.Property<int>("Place")
                         .HasColumnType("int");
 
@@ -394,6 +397,9 @@ namespace drift.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StyleScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Total")
                         .HasColumnType("int");
 
                     b.Property<int>("TrackScore")

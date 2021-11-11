@@ -53,6 +53,7 @@ namespace drift.Service
                     Attempt = cs.Attempt,
                     Competition = new CompetitionDto() {Id = cs.CompetitionId},
                     ParticipantName = cs.ParticipantName,
+                    Participant = _userService.FindById(cs.ParticipantId),
                     Total = cs.AngleScore + cs.TrackScore + cs.StyleScore
                 };
             return result;
@@ -101,71 +102,83 @@ namespace drift.Service
             }
         }
 
+        public List<CompetitionApplicationDto> OrderApplicationsByScore(List<CompetitionApplicationDto> applications,
+            int competitionId)
+        {
+            var scores = getScoreDb(competitionId).ToList();
+
+            var applicationsOrdered = scores.Join(applications,
+                    s => s.Participant.Id,
+                    a => a.Participant.Id,
+                    (s, a) => new
+                    {
+                        Score = s,
+                        Application = a
+                    })
+                .Where(sc =>
+                    sc.Score.Total == scores
+                        .Where(s => s.Participant.Id.Equals(sc.Score.Participant.Id))
+                        .Max(sc => sc.Total))
+                .OrderByDescending(sc => sc.Score.Total)
+                .Select(sc => sc.Application)
+                .ToList();
+
+            return applicationsOrdered;
+        }
+
         public void GenerateResults(int competitionId, string userId)
         {
-            using (db)
+            Random random = new Random((int) (DateTime.Now.Ticks));
+            var competition = getCompetition(competitionId, userId);
+            if (competition.Finished)
             {
-                Random random=new Random((int) (DateTime.Now.Ticks));
-                var competition = getCompetition(competitionId, userId);
-                if (competition.Finished)
-                {
-                    return;
-                }
-
-                var applications = _userService.GetApprovedApplicationsByCompetition(competitionId);
-                var fakeCarName = "Participant #";
-                var participantName = "Car #";
-                for (int i = 0; i < applications.Count; i++)
-                {
-                    var result = new CompetitionResult()
-                    {
-                        CarNumber = applications[i].ParticipantNumber,
-                        CompetitionId = competition.Id,
-                        FirstPhaseScore = random.Next(1, 100),
-                        FourthPhaseScore = random.Next(1, 100),
-                        ParticipantCar = applications[i].CarModelAndName,
-                        ParticipantId = applications[i].ApplicantId,
-                        ParticipantName = applications[i].CarModelAndName,
-                        SecondPhaseScore = random.Next(1, 100),
-                        ThirdPhaseScore = random.Next(1, 100),
-                    };
-                    db.CompetitionResults.Add(result);
-                }
-
-                for (int i = 1; i <= ResultSize - applications.Count; i++)
-                {
-                    var result = new CompetitionResult()
-                    {
-                        CarNumber = i,
-                        CompetitionId = competition.Id,
-                        FirstPhaseScore = random.Next(1, 100),
-                        FourthPhaseScore = random.Next(1, 100),
-                        ParticipantCar = fakeCarName + i,
-                        ParticipantId = userId,
-                        ParticipantName = participantName + i,
-                        SecondPhaseScore = random.Next(1, 100),
-                        ThirdPhaseScore = random.Next(1, 100),
-                    };
-                    db.CompetitionResults.Add(result);
-                }
-
-                var presentResults = db.CompetitionResults.Where(cr => cr.CompetitionId == competitionId)
-                    .Select(cr =>
-                        new
-                        {
-                            firstPhase = cr.FirstPhaseScore,
-                            secondPhase = cr.SecondPhaseScore,
-                            thirdPhase = cr.ThirdPhaseScore,
-                            fourthPhase = cr.FourthPhaseScore,
-                            Id = cr.Id
-                        }).ToList();
-
-                competition.Finished = true;
-                competition.RegistrationOpen = false;
-                db.Competitions.Update(competition);
-                db.SaveChanges();
-                generateScores(competition);
+                return;
             }
+
+            var applications = _userService.GetApprovedApplicationsByCompetition(competitionId);
+            applications = OrderApplicationsByScore(applications, competitionId);
+            var fakeCarName = "Participant #";
+            var participantName = "Car #";
+            for (int i = 0; i < applications.Count; i++)
+            {
+                var result = new CompetitionResult()
+                {
+                    CarNumber = applications[i].ParticipantNumber,
+                    CompetitionId = competition.Id,
+                    FirstPhaseScore = random.Next(1, 100),
+                    FourthPhaseScore = random.Next(1, 100),
+                    ParticipantCar = applications[i].CarModelAndName,
+                    ParticipantId = applications[i].ApplicantId,
+                    ParticipantName = applications[i].ParticipantName,
+                    SecondPhaseScore = random.Next(1, 100),
+                    ThirdPhaseScore = random.Next(1, 100),
+                    ParticipantNumber = i,
+                };
+                db.CompetitionResults.Add(result);
+            }
+
+            for (int i = applications.Count; i < ResultSize; i++)
+            {
+                var result = new CompetitionResult()
+                {
+                    CarNumber = i,
+                    CompetitionId = competition.Id,
+                    FirstPhaseScore = random.Next(1, 100),
+                    FourthPhaseScore = random.Next(1, 100),
+                    ParticipantCar = fakeCarName + i,
+                    ParticipantId = userId,
+                    ParticipantName = participantName + i,
+                    SecondPhaseScore = random.Next(1, 100),
+                    ThirdPhaseScore = random.Next(1, 100),
+                    ParticipantNumber = i,
+                };
+                db.CompetitionResults.Add(result);
+            }
+
+            competition.Finished = true;
+            competition.RegistrationOpen = false;
+            db.Competitions.Update(competition);
+            db.SaveChanges();
         }
 
         public void generateScores(Competition competition)
@@ -234,7 +247,6 @@ namespace drift.Service
                 bracket.FourthStageResults = new List<CompetitionResultDto>();
                 for (int i = 0; i < bracket.SecondStageResults.Count; i += 2)
                 {
-                    Console.WriteLine(i);
                     bracket.ThirdStageResults.Add(getWinnerSecondStage(bracket.SecondStageResults[i],
                         bracket.SecondStageResults[i + 1]));
                 }
@@ -259,24 +271,46 @@ namespace drift.Service
 
         private void updatePlaces(CompetitionBracket bracket)
         {
-            var i = 1;
+            var i = 4;
+            
             var secondStagePlaces = bracket.SecondStageResults
                 .OrderByDescending(dto => dto.FirstPhaseScore + dto.SecondPhaseScore)
                 .ToList();
             var firstStagePlaces = bracket.FirstStageResults
                 .OrderByDescending(dto => dto.FirstPhaseScore)
                 .ToList();
-            foreach (var result in bracket.FourthStageResults)
-            {
-                var resultDb = db.CompetitionResults.FirstOrDefault(res => res.Id == result.Id);
-                resultDb.Place = i;
-                calculateTotal(resultDb);
-                i++;
-                secondStagePlaces.Remove(result);
-                firstStagePlaces.Remove(result);
-            }
 
-            Console.WriteLine();
+            var firstResultDb =
+                db.CompetitionResults.FirstOrDefault(res => res.Id == bracket.FourthStageResults[0].Id);
+            var secondResultDb =
+                db.CompetitionResults.FirstOrDefault(res => res.Id == bracket.FourthStageResults[1].Id);
+            var thirdResultDb =
+                db.CompetitionResults.FirstOrDefault(res => res.Id == bracket.FourthStageResults[2].Id);
+            var fourthResultDb =
+                db.CompetitionResults.FirstOrDefault(res => res.Id == bracket.FourthStageResults[3].Id);
+
+
+            firstResultDb.Place = firstResultDb.FourthPhaseScore > secondResultDb.FourthPhaseScore ? 1 : 2;
+            secondResultDb.Place = secondResultDb.FourthPhaseScore > firstResultDb.FourthPhaseScore ? 1 : 2;
+            thirdResultDb.Place = thirdResultDb.FourthPhaseScore > fourthResultDb.FourthPhaseScore ? 3 : 4;
+            fourthResultDb.Place = fourthResultDb.FourthPhaseScore > thirdResultDb.FourthPhaseScore ? 3 : 4;
+
+            calculateTotal(firstResultDb);
+            calculateTotal(secondResultDb);
+            calculateTotal(thirdResultDb);
+            calculateTotal(fourthResultDb);
+
+            firstStagePlaces.Remove(bracket.FourthStageResults[0]);
+            firstStagePlaces.Remove(bracket.FourthStageResults[1]);
+            firstStagePlaces.Remove(bracket.FourthStageResults[2]);
+            firstStagePlaces.Remove(bracket.FourthStageResults[3]);
+            
+            secondStagePlaces.Remove(bracket.FourthStageResults[0]);
+            secondStagePlaces.Remove(bracket.FourthStageResults[1]);
+            secondStagePlaces.Remove(bracket.FourthStageResults[2]);
+            secondStagePlaces.Remove(bracket.FourthStageResults[3]);
+
+
             foreach (var result in secondStagePlaces)
             {
                 var resultDb = db.CompetitionResults.FirstOrDefault(res => res.Id == result.Id);
@@ -284,7 +318,6 @@ namespace drift.Service
                 firstStagePlaces.Remove(result);
             }
 
-            Console.WriteLine();
             foreach (var result in firstStagePlaces)
             {
                 var resultDb = db.CompetitionResults.FirstOrDefault(res => res.Id == result.Id);
@@ -331,7 +364,7 @@ namespace drift.Service
         private CompetitionResultDto getWinnerSecondStage(CompetitionResultDto firstParticipant,
             CompetitionResultDto secondParticipant)
         {
-            return firstParticipant.FirstPhaseScore > secondParticipant.SecondPhaseScore
+            return firstParticipant.SecondPhaseScore > secondParticipant.SecondPhaseScore
                 ? firstParticipant
                 : secondParticipant;
         }
@@ -339,7 +372,7 @@ namespace drift.Service
         private CompetitionResultDto getWinnerThirdStage(CompetitionResultDto firstParticipant,
             CompetitionResultDto secondParticipant)
         {
-            return firstParticipant.FirstPhaseScore > secondParticipant.ThirdPhaseScore
+            return firstParticipant.ThirdPhaseScore > secondParticipant.ThirdPhaseScore
                 ? firstParticipant
                 : secondParticipant;
         }
@@ -347,7 +380,7 @@ namespace drift.Service
         private CompetitionResultDto getLoserThirdStage(CompetitionResultDto firstParticipant,
             CompetitionResultDto secondParticipant)
         {
-            return firstParticipant.FirstPhaseScore < secondParticipant.ThirdPhaseScore
+            return firstParticipant.ThirdPhaseScore < secondParticipant.ThirdPhaseScore
                 ? firstParticipant
                 : secondParticipant;
         }

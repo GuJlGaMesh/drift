@@ -67,12 +67,6 @@
                         @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = item.Id}, new {@class = "mb-1 text-white"})
                     </button>
                 }
-                else
-                {
-	                <button class="btn btn-success">
-		                @Html.ActionLink("Начать соревнование", "GenerateResults", "CompetitionResult", new {competitionId = item.Id}, new {@class = "mb-1 text-white"})
-	                </button>
-                }
             </td>
         </tr>
     }
