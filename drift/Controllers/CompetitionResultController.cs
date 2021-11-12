@@ -26,6 +26,13 @@ namespace drift.Controllers
             var bracket = _resultService.getResultsBracket(competitionId);
             return View(bracket);
         }
+        
+        [HttpGet]
+        public IActionResult GetAllStagesResults(int competitionId)
+        {
+            var results = _resultService.GetAllStagesResults(competitionId);
+            return View(results);
+        }
 
         [HttpPost]
         public IActionResult SetScores(CompetitionScoreSetRequest request)

@@ -21,6 +21,8 @@ namespace drift.Models.Dto
 
         public bool Participating { get; set; }
 
+        public bool HasStages { get; set; }
+
         public List<CompetitionApplicationDto> Applications { get; set; }
 
         public override string ToString()

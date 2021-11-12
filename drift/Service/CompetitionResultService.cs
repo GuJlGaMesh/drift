@@ -231,6 +231,42 @@ namespace drift.Service
             return competition;
         }
 
+        public AllStagesResultResponse GetAllStagesResults(int competitionId)
+        {
+            var competition = _userService.GetCompetition(competitionId);
+            var name = competition.Name.Split(' ')[0];
+            var results = from cr in db.CompetitionResults
+                join c in db.Competitions on cr.CompetitionId equals c.Id
+                where c.Name.StartsWith(name)
+                select new CompetitionResultDto()
+                {
+                    Id = cr.Id,
+                    Competition = _mapper.Map<CompetitionDto>(c),
+                    Place = cr.Place,
+                    FirstPhaseScore = cr.FirstPhaseScore,
+                    SecondPhaseScore = cr.SecondPhaseScore,
+                    ThirdPhaseScore = cr.ThirdPhaseScore,
+                    FourthPhaseScore = cr.FourthPhaseScore,
+                    CarNumber = cr.CarNumber,
+                    TotalScore = cr.TotalScore,
+                    ParticipantName = cr.ParticipantName,
+                };
+            var totalResults = results.ToList()
+                .GroupBy(r => r.ParticipantName)
+                .Select(r =>
+                    new CompetitionResultDto()
+                    {
+                        ParticipantName = r.Key,
+                        TotalScore = r.Sum(cr =>
+                            cr.FirstPhaseScore + cr.SecondPhaseScore + cr.ThirdPhaseScore + cr.FourthPhaseScore)
+                    }
+                )
+                .OrderByDescending(r => r.TotalScore)
+                .ToList();
+            var competitions = results.Select(r => r.Competition).Distinct().ToList();
+            return new AllStagesResultResponse() {Results = totalResults, CompetitionDtos = competitions};
+        }
+
         public CompetitionBracket getResultsBracket(int competitionId)
         {
             using (db)

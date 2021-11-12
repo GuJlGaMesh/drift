@@ -34,7 +34,14 @@ else
     <button class="btn btn-success">
         @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
     </button>
+    @if (@Model.HasStages)
+    {
+        <button class="btn btn-success">
+            @Html.ActionLink("Результаты всех этапов", "GetAllStagesResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
+        </button>
+    }
 }
+
 @if (@Model.CreatedById.Equals(httpContextAccessor.HttpContext.User.Identity.Name))
 {
     <table class="table">

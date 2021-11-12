@@ -1,0 +1,46 @@
+﻿@model drift.Models.Dto.AllStagesResultResponse
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    var i = 1;
+}
+
+<h1 class="text-center">Результаты соревнований</h1>
+<table class="table">
+    <thead>
+    <th scope="col">Название</th>
+    <th scope="col">Дата</th>
+    </thead>
+    <tbody>
+    @foreach (var result in @Model.CompetitionDtos)
+    {
+        <tr>
+            <td>@result.Name</td>
+            <td>@result.StartDate</td>
+        </tr>
+    }
+    </tbody>
+</table>
+<h1 class="text-center">Результаты</h1>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Место</th>
+        <th scope="col">Имя</th>
+        <th scope="col">Очки</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var result in @Model.Results)
+    {
+        <tr>
+            <th scope="row">@i</th>
+            <td>@result.ParticipantName</td>
+            <td>@result.TotalScore</td>
+            @{ i++; }
+
+        </tr>
+    }
+    </tbody>
+</table>

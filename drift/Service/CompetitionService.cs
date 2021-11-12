@@ -34,7 +34,17 @@ namespace drift.Service
 
         public CompetitionDto GetById(int id)
         {
-            return _mapper.Map<Competition, CompetitionDto>(_db.Competitions.FirstOrDefault(c => c.Id == id));
+            var competition = _db.Competitions.Find(id);
+            var dto = _mapper.Map<CompetitionDto>(competition);
+            var name = dto.Name.Split(' ')[0];
+            Console.WriteLine(name);
+            dto.HasStages = _db.Competitions.Count(c =>
+                c.Id != id
+                && c.Name.StartsWith(name)
+                && c.Finished
+                && c.CreatedById == competition.CreatedById
+            ) > 0;
+            return dto;
         }
 
         public List<CompetitionDto> FindCompetitions()
