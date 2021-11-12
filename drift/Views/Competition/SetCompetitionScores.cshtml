@@ -27,9 +27,9 @@
         </tr>
         </thead>
         <tbody>
+        @Html.TextBoxFor(s => request.competitionId, new {value = Model.CompetitionId, hidden = true})
         @foreach (var participant in @Model.Participants)
         {
-            @Html.TextBoxFor(s => request.competitionId, new {value = Model.CompetitionId, hidden = true})
             for (var i = 0; i < @Model.Attempts; i++)
             {
                 <tr>
@@ -61,7 +61,12 @@
                         @Html.TextBoxFor(s => request.Scores[totalCount].StyleScore)
                     </th>
                     <th scope="col">
-                        @(i + 1)
+                        @Html.TextBoxFor(s => request.Scores[totalCount].Attempt,
+                            new
+                            {
+                                value = i + 1,
+                                @readonly = true
+                            })
                     </th>
                     @{
                         ++totalCount;
@@ -79,6 +84,6 @@
         </tbody>
     </table>
     <button class="btn btn-success" type="submit">
-      Установить очки
+        Установить очки
     </button>
 </form>

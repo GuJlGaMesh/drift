@@ -30,6 +30,8 @@ namespace drift.Data.Entity
 
         public int Total { get; set; }
 
+        public int BestTotal { get; set; }
+
         public string ParticipantName { get; set; }
     }
 }

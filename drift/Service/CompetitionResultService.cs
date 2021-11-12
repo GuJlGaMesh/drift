@@ -96,9 +96,10 @@ namespace drift.Service
                     scoreDto.BestAngle = participantScore.Max(cs => cs.AngleScore);
                     scoreDto.BestTrack = participantScore.Max(cs => cs.TrackScore);
                     scoreDto.BestStyle = participantScore.Max(cs => cs.StyleScore);
+                    scoreDto.BestTotal = participantScore.Max(cs => cs.Total);
                 }
 
-                return score;
+                return score.OrderByDescending(cs => cs.BestTotal).ToList();
             }
         }
 
@@ -271,45 +272,19 @@ namespace drift.Service
 
         private void updatePlaces(CompetitionBracket bracket)
         {
-            var i = 4;
-            
+            var i = 5;
+
             var secondStagePlaces = bracket.SecondStageResults
-                .OrderByDescending(dto => dto.FirstPhaseScore + dto.SecondPhaseScore)
+                .OrderByDescending(dto => dto.SecondPhaseScore)
                 .ToList();
             var firstStagePlaces = bracket.FirstStageResults
                 .OrderByDescending(dto => dto.FirstPhaseScore)
                 .ToList();
 
-            var firstResultDb =
-                db.CompetitionResults.FirstOrDefault(res => res.Id == bracket.FourthStageResults[0].Id);
-            var secondResultDb =
-                db.CompetitionResults.FirstOrDefault(res => res.Id == bracket.FourthStageResults[1].Id);
-            var thirdResultDb =
-                db.CompetitionResults.FirstOrDefault(res => res.Id == bracket.FourthStageResults[2].Id);
-            var fourthResultDb =
-                db.CompetitionResults.FirstOrDefault(res => res.Id == bracket.FourthStageResults[3].Id);
-
-
-            firstResultDb.Place = firstResultDb.FourthPhaseScore > secondResultDb.FourthPhaseScore ? 1 : 2;
-            secondResultDb.Place = secondResultDb.FourthPhaseScore > firstResultDb.FourthPhaseScore ? 1 : 2;
-            thirdResultDb.Place = thirdResultDb.FourthPhaseScore > fourthResultDb.FourthPhaseScore ? 3 : 4;
-            fourthResultDb.Place = fourthResultDb.FourthPhaseScore > thirdResultDb.FourthPhaseScore ? 3 : 4;
-
-            calculateTotal(firstResultDb);
-            calculateTotal(secondResultDb);
-            calculateTotal(thirdResultDb);
-            calculateTotal(fourthResultDb);
-
-            firstStagePlaces.Remove(bracket.FourthStageResults[0]);
-            firstStagePlaces.Remove(bracket.FourthStageResults[1]);
-            firstStagePlaces.Remove(bracket.FourthStageResults[2]);
-            firstStagePlaces.Remove(bracket.FourthStageResults[3]);
-            
-            secondStagePlaces.Remove(bracket.FourthStageResults[0]);
-            secondStagePlaces.Remove(bracket.FourthStageResults[1]);
-            secondStagePlaces.Remove(bracket.FourthStageResults[2]);
-            secondStagePlaces.Remove(bracket.FourthStageResults[3]);
-
+            for (var j = 0; j < bracket.FourthStageResults.Count; j += 2)
+            {
+                UpdateFourthStageResults(bracket.FourthStageResults, j, firstStagePlaces, secondStagePlaces);
+            }
 
             foreach (var result in secondStagePlaces)
             {
@@ -326,6 +301,28 @@ namespace drift.Service
             }
 
             db.SaveChanges();
+        }
+
+        private void UpdateFourthStageResults(List<CompetitionResultDto> results, int i,
+            List<CompetitionResultDto> firstStagePlaces, List<CompetitionResultDto> secondStagePlaces)
+        {
+            var firstResultDb =
+                db.CompetitionResults.FirstOrDefault(res => res.Id == results[i].Id);
+            var secondResultDb =
+                db.CompetitionResults.FirstOrDefault(res => res.Id == results[i + 1].Id);
+
+            calculateTotal(firstResultDb);
+            calculateTotal(secondResultDb);
+
+            firstResultDb.Place = firstResultDb.FourthPhaseScore > secondResultDb.FourthPhaseScore ? i + 1 : i + 2;
+            secondResultDb.Place = secondResultDb.FourthPhaseScore > firstResultDb.FourthPhaseScore ? i + 1 : i + 2;
+
+            firstStagePlaces.Remove(results[i]);
+            firstStagePlaces.Remove(results[i + 1]);
+
+
+            secondStagePlaces.Remove(results[i]);
+            secondStagePlaces.Remove(results[i + 1]);
         }
 
         private static int thirdStageRecalculation(CompetitionResult? resultDb, int i)

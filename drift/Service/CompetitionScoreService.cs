@@ -27,7 +27,7 @@ namespace drift.Service
             var scoresToRemove = _db.CompetitionScores.Where(c => c.CompetitionId == competitionId)
                 .Select(c => c);
             _db.CompetitionScores.RemoveRange(scoresToRemove);
-            _db.CompetitionScores.RemoveRange();
+
             var scores = scoreDtos.Select(score =>
                 new CompetitionScore()
                 {
