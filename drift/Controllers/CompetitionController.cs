@@ -47,7 +47,9 @@ namespace drift.Controllers
         {
             var competition = _competitionService.GetById(id);
             var applications = _userService.GetApprovedApplicationsByCompetition(competition.Id);
-            competition.Applications = applications;
+            var ignoredApplications = _userService.GetIgnoredApplicationsByCompetition(competition.Id);
+            competition.Applications = applications.Union(ignoredApplications).ToList();
+
             return View(competition);
         }
 
@@ -88,6 +90,15 @@ namespace drift.Controllers
             var userId = HttpContext.User.Identity.Name;
             var competitions = _competitionService.FindCreatedCompetitions(userId);
             return View(competitions);
+        }
+
+        [HttpGet]
+        public IActionResult Decline(int? id)
+        {
+	        var application = _approvingService.GetApplicationById(id.Value);
+		        application.Ignore = true;
+		        _approvingService.UpdateMedicalApplicationStatus(application);
+		        return RedirectToAction(nameof(GetCompetition), new { Id = application.CompetitionId });
         }
     }
 }

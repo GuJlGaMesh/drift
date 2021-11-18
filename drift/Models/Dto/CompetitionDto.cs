@@ -10,13 +10,20 @@ namespace drift.Models.Dto
     {
         public int Id { get; set; }
 
-        [DataType(DataType.Date)] public DateTime StartDate { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayName("Начало")]
+        public DateTime StartDate { get; set; }
         public string CreatedById { get; set; }
-        [DisplayName("Created by:")] public String CreatorUserName { get; set; }
+        [DisplayName("Организатор")] public String CreatorUserName { get; set; }
+        [DisplayName("Название")]
         public string Name { get; set; }
+        [DisplayName("Регистрация")]
         public bool RegistrationOpen { get; set; }
+        [DisplayName("Завершено")]
         public bool Finished { get; set; }
+        [DisplayName("Описание")]
         public string Description { get; set; }
+        [DisplayName("Сумма оплаты")]
         public double Fee { get; set; }
 
         public bool Participating { get; set; }

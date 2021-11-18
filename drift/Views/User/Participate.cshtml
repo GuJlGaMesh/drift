@@ -23,7 +23,7 @@
                 <div>Ваш автомобиль:</div>
                 @Html.DisplayFor(x => x.CarModelAndName)<br/>
                 <label asp-for="ParticipantNumber" class="control-label"></label>
-                <input asp-for="ParticipantNumber" class="form-control"/>
+                <input class="form-control" type="number" min="1" max="100" asp-for="ParticipantNumber" />
                 <span asp-validation-for="ParticipantNumber" class="text-danger"></span>
             </div>
             <div class="form-group form-check">

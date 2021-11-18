@@ -123,7 +123,7 @@ namespace drift.Service
             var applications = from ca in _context.CompetitionApplications
                 join c in _context.Cars on ca.CarId equals c.Id
                 join u in _context.Users on ca.ApplicantId equals u.Id
-                where ca.CompetitionId == competitionId
+                where ca.CompetitionId == competitionId && !ca.Ignore
                 select new CompetitionApplicationDto()
                 {
                     ApplicantId = ca.ApplicantId,
@@ -149,6 +149,31 @@ namespace drift.Service
                               new CompetitionApplication
                                   {ApprovedByMedics = false, ApprovedByOrganizer = false, ApprovedByTech = false};
             return application.ApprovedByMedics && application.ApprovedByOrganizer && application.ApprovedByTech;
+        }
+
+        public IEnumerable<CompetitionApplicationDto> GetIgnoredApplicationsByCompetition(int competitionId)
+        {
+	        var applications = from ca in _context.CompetitionApplications
+		        join c in _context.Cars on ca.CarId equals c.Id
+		        join u in _context.Users on ca.ApplicantId equals u.Id
+		        where ca.CompetitionId == competitionId && ca.Ignore
+		        select new CompetitionApplicationDto()
+		        {
+			        ApplicantId = ca.ApplicantId,
+			        ApplicationId = ca.Id,
+			        ApprovedByMedics = ca.ApprovedByMedics,
+			        ApprovedByOrganizer = ca.ApprovedByOrganizer,
+			        ApprovedByTech = ca.ApprovedByTech,
+			        Car = ca.Car,
+			        CarId = ca.CarId,
+			        CarModelAndName = ca.Car.Model + " " + ca.Car.Name,
+			        Competition = ca.Competition,
+			        CompetitionId = ca.CompetitionId,
+			        ParticipantNumber = ca.ParticipantNumber,
+			        Participant = MapUser(u),
+                    Ignore = ca.Ignore
+		        };
+	        return applications.ToList();
         }
     }
 }

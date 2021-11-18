@@ -21,21 +21,21 @@ namespace drift.Service
 		public IEnumerable<CompetitionApplicationDto> GetPendingMedicsApplications()
 		{
 			var applications = _context.CompetitionApplications.Include(c => c.Competition).Include(c => c.IdentityUser)
-				.ToList().Where(x => !x.ApprovedByMedics);
+				.ToList().Where(x => !x.ApprovedByMedics && !x.Ignore);
 			return _mapper.Map<IEnumerable<CompetitionApplicationDto>>(applications.AsEnumerable());
 		}
 
 		public IEnumerable<CompetitionApplicationDto> GetPendingTechApplications()
 		{
 			var applications = _context.CompetitionApplications.Include(c => c.Competition).Include(c => c.IdentityUser).ToList()
-				.Where(x => !x.ApprovedByTech);
+				.Where(x => !x.ApprovedByTech && !x.Ignore);
 			return _mapper.Map<IEnumerable<CompetitionApplicationDto>>(applications.AsEnumerable());
 		}
 
 		public IEnumerable<CompetitionApplicationDto> GetPendingOrganizerApplications()
 		{
 			var applications = _context.CompetitionApplications.Include(c => c.Competition).Include(c => c.IdentityUser).ToList()
-				.Where(x => !x.ApprovedByOrganizer);
+				.Where(x => !x.ApprovedByOrganizer && !x.Ignore);
 			return _mapper.Map<IEnumerable<CompetitionApplicationDto>>(applications.AsEnumerable());
 		}
 
@@ -52,7 +52,7 @@ namespace drift.Service
 				_context.CompetitionApplications.First(x => x.Id == dto.ApplicationId);
 
 			compApl.ApprovedByMedics = dto.ApprovedByMedics;
-
+			compApl.Ignore = dto.Ignore;
 			_context.SaveChanges();
 
 		}
@@ -63,7 +63,7 @@ namespace drift.Service
 				_context.CompetitionApplications.First(x => x.Id == dto.ApplicationId);
 
 			compApl.ApprovedByTech = dto.ApprovedByTech;
-
+			compApl.Ignore = dto.Ignore;
 			_context.SaveChanges();
 
 		}
@@ -74,7 +74,7 @@ namespace drift.Service
 				_context.CompetitionApplications.First(x => x.Id == dto.ApplicationId);
 
 			compApl.ApprovedByOrganizer = dto.ApprovedByOrganizer;
-
+			compApl.Ignore = dto.Ignore;
 			_context.SaveChanges();
 
 		}

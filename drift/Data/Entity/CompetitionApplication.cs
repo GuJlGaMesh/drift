@@ -29,5 +29,6 @@ namespace drift.Data.Entity
 		public bool ApprovedByMedics { get; set; }
 		public bool ApprovedByTech { get; set; }
 		public bool ApprovedByOrganizer { get; set; }
+		public bool Ignore { get; set; }
 	}
 }

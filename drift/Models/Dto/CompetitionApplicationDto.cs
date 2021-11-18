@@ -15,7 +15,7 @@ namespace drift.Models.Dto
 		[DisplayName("Номер для участия")]
 		[Required] public int ParticipantNumber { get; set; }
 
-		[DisplayName("Оплата")] public bool Paid => true;
+		[DisplayName("Оплата")] public bool Paid { get; set; }
 		public int CompetitionId { get; set; }
 		[DisplayName("Соревнование")]
 		public Competition Competition { get; set; }
@@ -33,6 +33,7 @@ namespace drift.Models.Dto
 		public bool ApprovedByTech { get; set; }
 		[DisplayName("Организаторы")]
 		public bool ApprovedByOrganizer { get; set; }
+		public bool Ignore { get; set; }
 
 		public override string ToString()
 		{

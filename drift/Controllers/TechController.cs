@@ -37,5 +37,17 @@ namespace drift.Controllers
 			}
 			return RedirectToAction(nameof(Index));
 		}
+
+		[HttpGet]
+		public IActionResult Decline(int? id)
+		{
+			if (id != null)
+			{
+				var application = _approvingService.GetApplicationById(id.Value);
+				application.Ignore = true;
+				_approvingService.UpdateMedicalApplicationStatus(application);
+			}
+			return RedirectToAction(nameof(Index));
+		}
 	}
 }

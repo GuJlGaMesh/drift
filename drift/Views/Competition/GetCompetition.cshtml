@@ -1,12 +1,12 @@
-﻿@using Microsoft.AspNetCore.Http
-@model drift.Models.Dto.CompetitionDto
-@inject IHttpContextAccessor httpContextAccessor
+﻿@using Microsoft.AspNetCore.Http;
+@model drift.Models.Dto.CompetitionDto;
+@inject IHttpContextAccessor httpContextAccessor;
 
 
 @{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
-    var attempts = 1;
+	ViewBag.Title = "title";
+	Layout = "_Layout";
+	var attempts = 1;
 }
 
 <h2>@Model.Name</h2>
@@ -14,92 +14,167 @@
 <p>@Model.StartDate</p>
 @if (!@Model.Finished)
 {
-    <form asp-controller="Competition" asp-action="SetCompetitionScores" method="get">
-        <input type="hidden" value="@Model.Id" name="competitionId" id="competitionId">
-        <label for="attempts" class="control-label">Введите количество попыток</label>
-        <select name="attempts" id="attempts">
-            <option value="1" selected>1</option>
-            <option value="2">2</option>
-            <option value="2">3</option>
-        </select>
-        <br>
-        <input type="submit" value="Начать соревнование" class="btn btn-success"/>
-    </form>
+	<form asp-controller="Competition" asp-action="SetCompetitionScores" method="get">
+		<input type="hidden" value="@Model.Id" name="competitionId" id="competitionId">
+		<label for="attempts" class="control-label">Введите количество попыток</label>
+		<select name="attempts" id="attempts">
+			<option value="1" selected>1</option>
+			<option value="2">2</option>
+			<option value="2">3</option>
+		</select>
+		<br>
+		<input type="submit" value="Начать соревнование" class="btn btn-success" />
+	</form>
 }
 else
 {
-    <button class="btn btn-success">
-        @Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
-    </button>
-    <button class="btn btn-success">
-        @Html.ActionLink("Очки", "GetScores", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
-    </button>
-    @if (@Model.HasStages)
-    {
-        <button class="btn btn-success">
-            @Html.ActionLink("Результаты всех этапов", "GetAllStagesResults", "CompetitionResult", new {competitionId = @Model.Id}, new {@class = "mb-1 text-white"})
-        </button>
-    }
+	<button class="btn btn-success">
+		@Html.ActionLink("Сетка результатов", "GetResults", "CompetitionResult", new { competitionId = @Model.Id }, new { @class = "mb-1 text-white" })
+	</button>
+	<button class="btn btn-success">
+		@Html.ActionLink("Очки", "GetScores", "CompetitionResult", new { competitionId = @Model.Id }, new { @class = "mb-1 text-white" })
+	</button>
+	@if (@Model.HasStages)
+	{
+		<button class="btn btn-success">
+			@Html.ActionLink("Результаты всех этапов", "GetAllStagesResults", "CompetitionResult", new { competitionId = @Model.Id }, new { @class = "mb-1 text-white" })
+		</button>
+	}
 }
 
 @if (@Model.CreatedById.Equals(httpContextAccessor.HttpContext.User.Identity.Name))
 {
-    <table class="table">
-        <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => @Model.Applications.First().ParticipantName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => @Model.Applications.First().ParticipantNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => @Model.Applications.First().Paid)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByTech)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByMedics)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByOrganizer)
-            </th>
-            <th>Действие</th>
-        </tr>
-        </thead>
-        @foreach (var application in @Model.Applications)
-        {
-            <tbody>
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => application.ParticipantName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => application.ParticipantNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => application.Paid)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => application.ApprovedByTech)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => application.ApprovedByMedics)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => application.ApprovedByOrganizer)
-                </td>
-                <td>
-                    @if (!application.ApprovedByOrganizer)
-                    {
-                        <button>
-                            <a asp-action="Approve" asp-route-id="@application.ApplicationId">Подтвердить участие</a>
-                        </button>
-                    }
-                </td>
-            </tr>
-            </tbody>
-        }
-    </table>
+	@if (Model.Applications.Count(x => x.Ignore == false) != 0)
+	{
+		<table class="table">
+			<thead>
+			<tr>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ParticipantName)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ParticipantNumber)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().Paid)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByTech)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByMedics)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByOrganizer)
+				</th>
+				<th>Действие</th>
+			</tr>
+			</thead>
+			<tbody>
+			@foreach (var application in @Model.Applications)
+			{
+				@if (!application.Ignore)
+				{
+
+					<tr>
+						<td>
+							@Html.DisplayFor(modelItem => application.ParticipantName)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => application.ParticipantNumber)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => application.Paid)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => application.ApprovedByTech)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => application.ApprovedByMedics)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => application.ApprovedByOrganizer)
+						</td>
+						<td>
+							@if (!application.ApprovedByOrganizer)
+							{
+								<button>
+									<a asp-action="Approve" asp-route-id="@application.ApplicationId">Подтвердить участие</a>|
+									<a asp-action="Decline" class="alert-danger" asp-route-id="@application.ApplicationId">Отклонить</a>
+								</button>
+							}
+						</td>
+					</tr>
+
+				}
+			}
+			</tbody>
+		</table>
+	}
+	@if (Model.Applications.Count(x => x.Ignore) != 0)
+	{
+		<h3 class="text-danger">Исключены</h3>
+		<table class="table">
+			<thead>
+			<tr>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ParticipantName)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ParticipantNumber)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().Paid)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByTech)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByMedics)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => @Model.Applications.First().ApprovedByOrganizer)
+				</th>
+				<th>Действие</th>
+			</tr>
+			</thead>
+			<tbody>
+			@foreach (var application in @Model.Applications)
+			{
+				@if (application.Ignore)
+				{
+					<tr class="table-danger text-danger">
+						<td class="text-danger">
+							@Html.DisplayFor(modelItem => application.ParticipantName)
+						</td>
+						<td class="text-danger">
+							@Html.DisplayFor(modelItem => application.ParticipantNumber)
+						</td>
+						<td class="text-danger">
+							@Html.DisplayFor(modelItem => application.Paid)
+						</td>
+						<td class="text-danger">
+							@Html.DisplayFor(modelItem => application.ApprovedByTech)
+						</td>
+						<td class="text-danger">
+							@Html.DisplayFor(modelItem => application.ApprovedByMedics)
+						</td>
+						<td class="text-danger">
+							@Html.DisplayFor(modelItem => application.ApprovedByOrganizer)
+						</td>
+						<td class="text-danger">
+							@if (!application.ApprovedByOrganizer)
+							{
+								<button>
+									<a asp-action="Approve" asp-route-id="@application.ApplicationId">Подтвердить участие</a>|
+									<a asp-action="Decline" class="alert-danger" asp-route-id="@application.ApplicationId">Отклонить</a>
+								</button>
+							}
+						</td>
+					</tr>
+				}
+			}
+			</tbody>
+		</table>
+	}
 }

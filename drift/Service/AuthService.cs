@@ -38,6 +38,7 @@ namespace drift.Service
             _mapper = mapper;
             _httpContext = httpContext.HttpContext;
             _userManager.PasswordValidators.Clear();
+            _userManager.UserValidators.Clear();
         }
 
         public async Task<IdentityUser> GetCurrentUserAsync()

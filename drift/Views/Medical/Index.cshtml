@@ -36,7 +36,9 @@
 				@Html.DisplayFor(modelItem => item.ApprovedByMedics)
 			</td>
 			<td>
-				<a asp-action="Approve" asp-route-id="@item.ApplicationId">Подтвердить</a>
+				<a asp-action="Approve" asp-route-id="@item.ApplicationId">Подтвердить</a> | 
+				<a asp-action="Decline" class="alert-danger" asp-route-id="@item.ApplicationId">Отклонить</a>
+
 			</td>
 		</tr>
 	}
