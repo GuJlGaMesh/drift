@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using drift.Models;
 using drift.Models.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -27,5 +28,7 @@ namespace drift.Data.Entity
         public int? FourthPhaseScore { get; set; }
         public int TotalScore { get; set; }
         public string ParticipantName { get; set; }
+
+        public Dictionary<int, int> competitionScores { get; set; } = new Dictionary<int, int>();
     }
 }

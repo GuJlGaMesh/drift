@@ -109,8 +109,8 @@ let minimalData = {
     <thead>
     <tr>
         <th scope="col">Место</th>
-        <th scope="col">Имя</th>
         <th scope="col">Номер машины</th>
+        <th scope="col">Имя</th>
         <th scope="col">Машина</th>
         <th scope="col">Очки</th>
     </tr>
@@ -122,8 +122,8 @@ let minimalData = {
         {
             <tr>
                 <th scope="row">@result.Place</th>
-                <td>@result.User.UserName</td>
                 <td>@result.CarNumber</td>
+                <td>@result.User.UserName</td>
                 <td>@result.ParticipantName</td>
                 <td>@result.TotalScore</td>
             </tr>
@@ -131,11 +131,11 @@ let minimalData = {
     }
     else
     {
-        <form method="post" >
-        <input type="hidden" name="bracket" id="bracket-input" >
-        <input type="hidden" name="competitionId" id="comp-id" value="@Model.CompetitionId" >
+        <form method="post">
+            <input type="hidden" name="bracket" id="bracket-input">
+            <input type="hidden" name="competitionId" id="comp-id" value="@Model.CompetitionId">
 
-        <button class="btn btn-success" id="set-results" type="submit" disabled>
+            <button class="btn btn-success" id="set-results" type="submit" disabled>
                 Установить результаты
             </button>
         </form>

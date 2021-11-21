@@ -270,7 +270,29 @@ namespace drift.Service
                 .OrderByDescending(r => r.TotalScore)
                 .ToList();
             var competitions = results.Select(r => r.Competition).Distinct().ToList();
+            setCompetitionScores(totalResults, competitions);
             return new AllStagesResultResponse() {Results = totalResults, CompetitionDtos = competitions};
+        }
+
+        public void setCompetitionScores(List<CompetitionResultDto> resultDtos, List<CompetitionDto> dtos)
+        {
+            foreach (var competition in dtos)
+            {
+                var results = db.CompetitionResults.Where(cr => cr.CompetitionId == competition.Id)
+                    .Select(cr => new
+                    {
+                        PartitcipantName = cr.ParticipantName,
+                        CarNumber = cr.CarNumber,
+                        ParticipantId = cr.ParticipantId,
+                        Total = cr.FirstPhaseScore + cr.SecondPhaseScore + cr.ThirdPhaseScore + cr.FourthPhaseScore
+                    }).ToList();
+                foreach (var result in resultDtos)
+                {
+                    var neededResult = results.FirstOrDefault(
+                        cr => cr.PartitcipantName.Equals(result.ParticipantName));
+                    result.competitionScores.Add(competition.Id, neededResult?.Total ?? 0);
+                }
+            }
         }
 
         public CompetitionBracket getResultsBracket(int competitionId)
