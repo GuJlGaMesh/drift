@@ -24,9 +24,18 @@ namespace drift.Controllers
         public IActionResult GetResults(int competitionId)
         {
             var bracket = _resultService.getResultsBracket(competitionId);
+            bracket.CompetitionId = competitionId;
             return View(bracket);
         }
-        
+
+
+        [HttpPost]
+        public IActionResult GetResults(SetResultsRequest request)
+        {
+            _resultService.storeResult(request);
+            return RedirectToAction("GetResults", new {competitionId = request.competitionId});
+        }
+
         [HttpGet]
         public IActionResult GetAllStagesResults(int competitionId)
         {
@@ -55,9 +64,9 @@ namespace drift.Controllers
         }
 
         [HttpGet]
-        public IActionResult StartMainPhase(int competitionId)
+        public IActionResult StartMainPhase(int competitionId, bool autoGenerate)
         {
-            _resultService.GenerateResults(competitionId, HttpContext.User.Identity.Name);
+            _resultService.GenerateResults(competitionId, HttpContext.User.Identity.Name, autoGenerate);
             return RedirectToAction("GetResults", new {competitionId = competitionId});
         }
     }

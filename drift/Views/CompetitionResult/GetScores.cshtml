@@ -5,6 +5,7 @@
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
+    var autoGen = false;
 }
 <table class="table">
     <thead>
@@ -48,12 +49,18 @@
         }
     }
     </tbody>
-</table>
+</table> 
 @if (Model.createdById == httpContextAccessor.HttpContext.User.Identity.Name)
 {
-    <a class="nav-link text-dark" asp-controller="CompetitionResult" asp-action="StartMainPhase" asp-route-competitionId="@Model.competitionId">
+    <a class="nav-link text-dark" asp-controller="CompetitionResult" asp-action="StartMainPhase" asp-route-autoGenerate="true" asp-route-competitionId="@Model.competitionId">
         <button class="btn btn-success" type="submit">
-            Начать основной этап
+            Начать основной этап (автоматическая генерация)
+        </button>
+    </a>
+    
+    <a class="nav-link text-dark" asp-controller="CompetitionResult" asp-action="StartMainPhase" asp-route-autoGenerate="false" asp-route-competitionId="@Model.competitionId">
+        <button class="btn btn-success" type="submit">
+            Начать основной этап (ручная генерация)
         </button>
     </a>
 }

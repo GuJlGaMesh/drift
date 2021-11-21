@@ -12,6 +12,9 @@ namespace drift.Models.Dto
         public List<CompetitionResultDto> FourthStageResults { get; set; }
         public List<CompetitionResultDto> OverallResults { get; set; }
 
+        public int CompetitionId { get; set; }
+
+        public Boolean ResultsSet { get; set; }
 
         public override string ToString()
         {

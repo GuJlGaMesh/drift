@@ -7,6 +7,7 @@ using drift.Data;
 using drift.Data.Entity;
 using drift.Models.Dto;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 
 namespace drift.Service
 {
@@ -127,7 +128,7 @@ namespace drift.Service
             return applicationsOrdered;
         }
 
-        public void GenerateResults(int competitionId, string userId)
+        public void GenerateResults(int competitionId, string userId, bool autoGenerate)
         {
             Random random = new Random((int) (DateTime.Now.Ticks));
             var competition = getCompetition(competitionId, userId);
@@ -146,13 +147,13 @@ namespace drift.Service
                 {
                     CarNumber = applications[i].ParticipantNumber,
                     CompetitionId = competition.Id,
-                    FirstPhaseScore = random.Next(1, 100),
-                    FourthPhaseScore = random.Next(1, 100),
+                    FirstPhaseScore = createScore(autoGenerate, random),
+                    FourthPhaseScore = createScore(autoGenerate, random),
                     ParticipantCar = applications[i].CarModelAndName,
                     ParticipantId = applications[i].ApplicantId,
                     ParticipantName = applications[i].ParticipantName,
-                    SecondPhaseScore = random.Next(1, 100),
-                    ThirdPhaseScore = random.Next(1, 100),
+                    SecondPhaseScore = createScore(autoGenerate, random),
+                    ThirdPhaseScore = createScore(autoGenerate, random),
                     ParticipantNumber = i,
                 };
                 db.CompetitionResults.Add(result);
@@ -164,13 +165,13 @@ namespace drift.Service
                 {
                     CarNumber = i,
                     CompetitionId = competition.Id,
-                    FirstPhaseScore = random.Next(1, 100),
-                    FourthPhaseScore = random.Next(1, 100),
+                    FirstPhaseScore = createScore(autoGenerate, random),
+                    FourthPhaseScore = createScore(autoGenerate, random),
                     ParticipantCar = fakeCarName + i,
                     ParticipantId = userId,
                     ParticipantName = participantName + i,
-                    SecondPhaseScore = random.Next(1, 100),
-                    ThirdPhaseScore = random.Next(1, 100),
+                    SecondPhaseScore = createScore(autoGenerate, random),
+                    ThirdPhaseScore = createScore(autoGenerate, random),
                     ParticipantNumber = i,
                 };
                 db.CompetitionResults.Add(result);
@@ -180,6 +181,11 @@ namespace drift.Service
             competition.RegistrationOpen = false;
             db.Competitions.Update(competition);
             db.SaveChanges();
+        }
+
+        private int createScore(bool auto, Random random)
+        {
+            return auto ? random.Next(1, 100) : -1;
         }
 
         public void generateScores(Competition competition)
@@ -257,7 +263,7 @@ namespace drift.Service
                     new CompetitionResultDto()
                     {
                         ParticipantName = r.Key,
-                        TotalScore = r.Sum(cr =>
+                        TotalScore = (int) r.Sum(cr =>
                             cr.FirstPhaseScore + cr.SecondPhaseScore + cr.ThirdPhaseScore + cr.FourthPhaseScore)
                     }
                 )
@@ -275,6 +281,13 @@ namespace drift.Service
                 var results = getResults(competitionId);
                 bracket.SecondStageResults = new List<CompetitionResultDto>();
                 bracket.FirstStageResults = results;
+                if (results.Count(r => r.FirstPhaseScore <= 0) > 0)
+                {
+                    GenerateEmptyResult(bracket);
+
+                    return bracket;
+                }
+
                 for (int i = 0; i < results.Count; i += 2)
                 {
                     bracket.SecondStageResults.Add(getWinnerFirstStage(results[i], results[i + 1]));
@@ -301,8 +314,38 @@ namespace drift.Service
                 }
 
                 updatePlaces(bracket);
+
                 bracket.OverallResults = getOverallResults(competitionId);
+                bracket.ResultsSet = true;
+
                 return bracket;
+            }
+        }
+
+        private static void GenerateEmptyResult(CompetitionBracket bracket)
+        {
+            bracket.SecondStageResults = new List<CompetitionResultDto>();
+            bracket.ThirdStageResults = new List<CompetitionResultDto>();
+            bracket.FourthStageResults = new List<CompetitionResultDto>();
+
+            foreach (var bracketFirstStageResult in bracket.FirstStageResults)
+            {
+                bracketFirstStageResult.FirstPhaseScore = null;
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                bracket.SecondStageResults.Add(new CompetitionResultDto());
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                bracket.ThirdStageResults.Add(new CompetitionResultDto());
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                bracket.FourthStageResults.Add(new CompetitionResultDto());
             }
         }
 
@@ -418,28 +461,75 @@ namespace drift.Service
                 : secondParticipant;
         }
 
-        public CompetitionResultDto storeResult(CompetitionResultDto dto)
+        public void storeResult(SetResultsRequest request)
         {
-            using (db)
+            var results = db.CompetitionResults.Where(cr => cr.CompetitionId == request.competitionId)
+                .Select(cr => cr).OrderBy(dto => dto.CarNumber).ToList();
+            var bracket = JsonConvert.DeserializeObject<List<List<List<int?>>>>(request.bracket);
+            List<CompetitionResult> secondStageResults = new List<CompetitionResult>();
+            List<CompetitionResult> thirdsStageResults = new List<CompetitionResult>();
+            List<CompetitionResult> fourthStageResults = new List<CompetitionResult>();
+
+
+            for (var i = 0; i < 8; i++)
             {
-                var result = db.CompetitionResults.Add(new CompetitionResult()
+                results[2 * i].FirstPhaseScore = (int) bracket[0][i][0];
+                results[2 * i + 1].FirstPhaseScore = (int) bracket[0][i][1];
+
+                if (results[2 * i].FirstPhaseScore > results[2 * i + 1].FirstPhaseScore)
                 {
-                    CarNumber = dto.CarNumber,
-                    CompetitionId = dto.Competition.Id,
-                    ParticipantId = dto.User.Id,
-                    FirstPhaseScore = dto.FirstPhaseScore,
-                    SecondPhaseScore = dto.SecondPhaseScore,
-                    ThirdPhaseScore = dto.ThirdPhaseScore,
-                    FourthPhaseScore = dto.FourthPhaseScore,
-                    Place = dto.Place,
-                    TotalScore = dto.TotalScore,
-                    ParticipantName = dto.ParticipantName
-                });
-                db.SaveChanges();
-                dto.Id = result.Entity.Id;
+                    secondStageResults.Add(results[2 * i]);
+                }
+                else
+                {
+                    secondStageResults.Add(results[2 * i + 1]);
+                }
             }
 
-            return dto;
+            for (var i = 0; i < 8; i += 2)
+            {
+                secondStageResults[i].SecondPhaseScore = (int) bracket[1][i / 2][0];
+                secondStageResults[i + 1].SecondPhaseScore = (int) bracket[1][i / 2][1];
+                if (secondStageResults[i].SecondPhaseScore > secondStageResults[i + 1].SecondPhaseScore)
+                {
+                    thirdsStageResults.Add(secondStageResults[i]);
+                }
+                else
+                {
+                    thirdsStageResults.Add(secondStageResults[i + 1]);
+                }
+            }
+
+            List<CompetitionResult> losers = new List<CompetitionResult>();
+            for (int i = 0; i < 4; i += 2)
+            {
+                Console.WriteLine("[" + (int) bracket[2][i / 2][0] + "," + (int) bracket[2][i / 2][1] + "]");
+            }
+
+            for (var i = 0; i < 4; i += 2)
+            {
+                thirdsStageResults[i].ThirdPhaseScore = (int) bracket[2][i / 2][0];
+                thirdsStageResults[i + 1].ThirdPhaseScore = (int) bracket[2][i / 2][1];
+                if (thirdsStageResults[i].ThirdPhaseScore > thirdsStageResults[i + 1].ThirdPhaseScore)
+                {
+                    fourthStageResults.Add(thirdsStageResults[i]);
+                    losers.Add(thirdsStageResults[i + 1]);
+                }
+                else
+                {
+                    fourthStageResults.Add(thirdsStageResults[i + 1]);
+                    losers.Add(thirdsStageResults[i]);
+                }
+            }
+
+            fourthStageResults.AddRange(losers);
+            for (var i = 0; i < 4; i += 2)
+            {
+                fourthStageResults[i].FourthPhaseScore = (int) bracket[3][i / 2][0];
+                fourthStageResults[i + 1].FourthPhaseScore = (int) bracket[3][i / 2][1];
+            }
+
+            db.SaveChanges();
         }
 
         public CompetitionResultDto updateResult(CompetitionResultDto dto)
