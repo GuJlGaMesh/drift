@@ -8,5 +8,6 @@ namespace drift.Models.Dto
         public List<CompetitionScoreDto> Scores { get; set; }
         public int competitionId;
         public string createdById;
+        public string participantName { get; set; }
     }
 }

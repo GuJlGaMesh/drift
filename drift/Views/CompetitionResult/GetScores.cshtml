@@ -6,7 +6,22 @@
     ViewBag.Title = "title";
     Layout = "_Layout";
     var autoGen = false;
+	var participantName = "";
 }
+
+<form method="GET">
+	<div>
+		<input id="query" type="text" asp-for="participantName" />
+	</div>
+	<a class="nav-link text-dark" asp-controller="CompetitionResult" asp-action="GetScores" asp-route-competitionId="@Model.competitionId" asp-route-participantName="@Model.participantName">
+		<button class="btn btn-success" type="submit">
+			Найти
+		</button>
+	</a>
+</form>
+
+
+
 <table class="table">
     <thead>
     <tr class="bg-primary">

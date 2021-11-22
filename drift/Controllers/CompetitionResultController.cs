@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using drift.Models.Dto;
 using drift.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -55,10 +56,14 @@ namespace drift.Controllers
 
 
         [HttpGet]
-        public IActionResult GetScores(int competitionId)
+        public IActionResult GetScores(int competitionId, string participantName = null)
         {
             var competition = _userService.GetCompetition(competitionId);
             var score = _resultService.GetScore(competitionId);
+            if (!string.IsNullOrEmpty(participantName))
+            {
+	            score = score.Where(x => x.ParticipantName == participantName).ToList();
+            }
             return View(new CompetitionScoreResponse()
                 {Scores = score, competitionId = competition.Id, createdById = competition.CreatedById});
         }
