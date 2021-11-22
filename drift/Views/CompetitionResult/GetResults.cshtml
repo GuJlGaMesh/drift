@@ -56,10 +56,10 @@ function saveFn(newData) {
 
       if (newData.results[0][3][1][0]!=null && newData.results[0][3][1][1]!=null
       &&newData.results[0][3][0][0]!= null && newData.results[0][3][0][1]!=null){
-        $('#set-results').prop('disabled',false);
+                $('#set-results').prop('disabled',false);
+             $('#bracket-input').prop('value',JSON.stringify(newData.results[0]));
         }
-        $('#set-results').prop('disabled',false);
-        $('#bracket-input').prop('value',JSON.stringify(newData.results[0]));
+       
 
 
 }
