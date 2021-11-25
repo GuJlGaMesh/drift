@@ -7,6 +7,7 @@ using drift.Data;
 using drift.Data.Entity;
 using drift.Models.Dto;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace drift.Service
@@ -43,6 +44,8 @@ namespace drift.Service
         {
             var result = from cs in db.CompetitionScores
                 join c in db.Competitions on cs.CompetitionId equals c.Id
+                join d in db.CompetitionApplications on new {CompetitionId = cs.CompetitionId, ParticipantId=cs.ParticipantId}
+                    equals new {CompetitionId = d.CompetitionId, ParticipantId = d.ApplicantId}
                 orderby cs.ParticipantName
                 where cs.CompetitionId == competitionId
                 select new CompetitionScoreDto()
@@ -51,6 +54,7 @@ namespace drift.Service
                     AngleScore = cs.AngleScore,
                     StyleScore = cs.StyleScore,
                     TrackScore = cs.TrackScore,
+                    ParticipantNumber = d.ParticipantNumber,
                     Attempt = cs.Attempt,
                     Competition = new CompetitionDto() {Id = cs.CompetitionId},
                     ParticipantName = cs.ParticipantName,
@@ -85,9 +89,7 @@ namespace drift.Service
 
         public List<CompetitionScoreDto> GetScore(int comeptitionId)
         {
-            using (db)
-            {
-                var score = getScoreDb(comeptitionId).ToList();
+            var score = getScoreDb(comeptitionId).ToList();
                 foreach (var scoreDto in score)
                 {
                     var participantScore = db.CompetitionScores
@@ -101,7 +103,6 @@ namespace drift.Service
                 }
 
                 return score.OrderByDescending(cs => cs.BestTotal).ToList();
-            }
         }
 
         public List<CompetitionApplicationDto> OrderApplicationsByScore(List<CompetitionApplicationDto> applications,

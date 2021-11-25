@@ -63,6 +63,10 @@ namespace drift.Controllers
             if (!string.IsNullOrEmpty(participantName))
             {
 	            score = score.Where(x => x.ParticipantName == participantName).ToList();
+                if (score.Count == 0)
+                {
+                    score = _resultService.GetScore(competitionId).Where( x => x.ParticipantNumber.ToString() == participantName).ToList();
+                }
             }
             return View(new CompetitionScoreResponse()
                 {Scores = score, competitionId = competition.Id, createdById = competition.CreatedById});

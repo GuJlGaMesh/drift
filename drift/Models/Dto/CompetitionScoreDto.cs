@@ -17,6 +17,7 @@ namespace drift.Data.Entity
         }
 
         public UserDto Participant { get; set; }
+        public int ParticipantNumber { get; set; }
         public int AngleScore { get; set; }
         public int TrackScore { get; set; }
         public int StyleScore { get; set; }

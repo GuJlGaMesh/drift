@@ -6,18 +6,20 @@
     ViewBag.Title = "title";
     Layout = "_Layout";
     var autoGen = false;
-	var participantName = "";
 }
 
-<form method="GET">
+<form method="GET" asp-controller="CompetitionResult"
+      asp-action="GetScores" 
+      asp-route-competitionId="@Model.competitionId" 
+      asp-route-participantName="@Model.participantName"
+      >
 	<div>
-		<input id="query" type="text" asp-for="participantName" />
+		<input type="text" asp-for="participantName" />
+		<input type="hidden" value="@Model.competitionId" asp-for="competitionId" />
 	</div>
-	<a class="nav-link text-dark" asp-controller="CompetitionResult" asp-action="GetScores" asp-route-competitionId="@Model.competitionId" asp-route-participantName="@Model.participantName">
-		<button class="btn btn-success" type="submit">
+    <button class="btn btn-success" type="submit">
 			Найти
 		</button>
-	</a>
 </form>
 
 
@@ -26,6 +28,7 @@
     <thead>
     <tr class="bg-primary">
         <th scope="col">Участник</th>
+        <th scope="col">Номер участника</th>
         <th scope="col">Очки за угол</th>
         <th scope="col">Очки за трассу</th>
         <th scope="col">Очки за стиль</th>
@@ -40,9 +43,11 @@
             @if (i == 0 || @Model.Scores[i].ParticipantName != @Model.Scores[i - 1].ParticipantName)
             {
                 <th scope="col">@Model.Scores[i].ParticipantName</th>
+                <th scope="col">@Model.Scores[i].ParticipantNumber</th>
             }
             else
             {
+                <th></th>
                 <th></th>
             }
             <th scope="col">@Model.Scores[i].AngleScore</th>
@@ -55,6 +60,7 @@
         {
             <tr class="bg-success">
                 <th scope="col">Лучшие результаты</th>
+                <th scope="col"></th>
                 <th scope="col">@Model.Scores[i].BestAngle</th>
                 <th scope="col">@Model.Scores[i].BestTrack</th>
                 <th scope="col">@Model.Scores[i].BestStyle</th>
